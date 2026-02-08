@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="referrer" content="no-referrer"/>
+    <title>Rule34 Engine - AI Filter Edition</title>
+    <style>
+        :root { --bg: #0d1117; --text: #c9d1d9; --accent: #58a6ff; --card: #21262d; --border: #30363d; --success: #238636; --fav: #e81224; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; overflow-y: scroll; }
+        
+        .search-container { max-width: 800px; margin: 0 auto 20px; position: relative; }
+        .search-box-wrapper {
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 8px;
+            border-radius: 6px; border: 1px solid var(--border); background: #161b22;
+            min-height: 45px; align-items: center;
+        }
+        .tag-chip { background: var(--accent); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+        #tagInput { flex: 1; min-width: 150px; border: none; background: transparent; color: white; outline: none; font-size: 16px; }
+        
+        .controls { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+        select, button, .ai-toggle { padding: 12px; border-radius: 6px; border: 1px solid var(--border); font-weight: bold; cursor: pointer; background: var(--card); color: white; }
+        button#searchBtn { background: var(--success); border: none; flex: 2; }
+        
+        /* AI切り替えスイッチのスタイル */
+        .ai-toggle-wrapper { display: flex; align-items: center; gap: 8px; background: var(--card); padding: 10px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+        .ai-toggle-wrapper input { cursor: pointer; width: 18px; height: 18px; }
+
+        #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #1c2128; border: 1px solid var(--border); z-index: 1000; max-height: 300px; overflow-y: auto; display: none; }
+        .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #30363d; }
+        .autocomplete-item:hover { background: #30363d; color: var(--accent); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        .card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; height: 380px; position: relative; }
+        .media-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; cursor: zoom-in; }
+        img, video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .fav-btn { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); border: none; color: white; padding: 8px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 18px; }
+        .fav-btn.active { color: var(--fav); transform: scale(1.1); }
+        .video-indicator { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: white; pointer-events: none; }
+
+        .pagination { display: flex; gap: 10px; justify-content: center; align-items: center; margin: 40px 0; }
+        .page-num { width: 70px; text-align: center; }
+
+        #status { text-align: center; margin: 10px; color: var(--accent); font-weight: bold; min-height: 20px; }
+        
+        /* ローディングスピナー */
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* タグ履歴 */
+        .tag-history { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag-history-item { background: #30363d; color: #8b949e; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .tag-history-item:hover { background: var(--accent); color: #000; }
+        
+        /* グリッドサイズ切り替え */
+        .grid.small { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+        .grid.small .card { height: 280px; }
+        .grid.large { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+        .grid.large .card { height: 480px; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; }
+        #modal-content { max-width: 95%; max-height: calc(100vh - 180px); position: relative; display: flex; align-items: center; justify-content: center; }
+        #modal-body { max-height: 100%; display: flex; align-items: center; justify-content: center; }
+        #modal-body img, #modal-body video { max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; }
+        #modal-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2); z-index: 10; }
+        #modal-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+        
+        /* モーダルナビゲーションボタン */
+        .modal-nav { position: fixed; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s; z-index: 2001; }
+        .modal-nav:hover { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(1.1); }
+        .modal-nav.left { left: 20px; }
+        .modal-nav.right { right: 20px; }
+        
+        /* モーダル下部のアクションバー */
+        .modal-actions { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: none;  /* 初期状態は非表示 */
+            gap: 12px; 
+            background: rgba(13,17,23,0.95); 
+            backdrop-filter: blur(20px); 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 2003;
+        }
+        .modal-actions button { 
+            padding: 10px 20px; 
+            background: rgba(88,166,255,0.2); 
+            border: 1px solid var(--accent); 
+            color: var(--accent); 
+            font-weight: 600; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .modal-actions button:hover { 
+            background: var(--accent); 
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88,166,255,0.4);
+        }
+        .modal-actions button.primary {
+            background: var(--accent);
+            color: #000;
+        }
+        .modal-actions button.primary:hover {
+            background: #6eb5ff;
+            box-shadow: 0 4px 16px rgba(88,166,255,0.6);
+        }
+        
+        /* トップに戻るボタン */
+        #scrollTopBtn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--accent); border: none; border-radius: 50%; color: #000; font-size: 24px; cursor: pointer; display: none; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        #scrollTopBtn:hover { transform: scale(1.1); }
+        
+        /* ツールバーのモダン化 */
+        .toolbar { display: flex; gap: 10px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+        .toolbar button { 
+            padding: 10px 18px; 
+            font-size: 14px; 
+            background: rgba(88,166,255,0.1);
+            border: 1px solid rgba(88,166,255,0.3);
+            color: var(--accent);
+            transition: all 0.3s;
+        }
+        .toolbar button:hover {
+            background: rgba(88,166,255,0.2);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        
+        /* モーダルタグ表示 */
+        #modal-tags {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 80%;
+            max-height: 40vh;
+            overflow-y: auto;
+            background: rgba(13,17,23,0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 2002;
+            display: none;  /* 初期状態は非表示 */
+        }
+        #modal-tags .tag-item {
+            display: inline-block;
+            background: rgba(88,166,255,0.2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            margin: 4px;
+            border-radius: 15px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #modal-tags .tag-item:hover {
+            background: var(--accent);
+            color: #000;
+        }
+        
+        /* ページボタン */
+        .page-btn {
+            min-width: 40px;
+            padding: 8px 12px;
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .page-btn:hover {
+            background: rgba(88,166,255,0.2);
+            border-color: var(--accent);
+        }
+        .page-btn.active {
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="search-container">
+    <div class="search-box-wrapper" id="searchBoxWrapper">
+        <input type="text" id="tagInput" autocomplete="off" placeholder="タグを入力（空で全件表示）...">
+    </div>
+    <div id="autocomplete-list"></div>
+    <div id="tagHistory" class="tag-history"></div>
+    <div class="controls">
+        <select id="sortSelect">
+            <option value="">新着順</option>
+            <option value="sort:score:desc">スコア順</option>
+            <option value="sort:favcount:desc">お気に入り順</option>
+        </select>
+        
+        <label class="ai-toggle-wrapper">
+            <input type="checkbox" id="aiFilterCheck" checked>
+            <span>AI作品を隠す</span>
+        </label>
+
+        <button id="searchBtn">検索する</button>
+        <button id="favShowBtn" onclick="toggleFavMode()">❤ お気に入り</button>
+    </div>
+</div>
+
+<div class="toolbar">
+    <button onclick="changeGridSize('small')">小</button>
+    <button onclick="changeGridSize('medium')">中</button>
+    <button onclick="changeGridSize('large')">大</button>
+    <button onclick="exportFavorites()">💾 お気に入りをエクスポート</button>
+    <button onclick="document.getElementById('importFile').click()">📂 お気に入りをインポート</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFavorites(event)">
+    <button onclick="clearAllTags()">🗑️ タグをクリア</button>
+</div>
+
+<div id="status"></div>
+<div id="gallery" class="grid"></div>
+
+<button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+
+<div class="pagination" id="bottomNav">
+    <button onclick="changePage(-1)">前のページ</button>
+    <input type="number" id="pageNumInput" class="page-num" value="0" min="0" onchange="performSearch(this.value)">
+    <div id="pageButtons" style="display: flex; gap: 5px;"></div>
+    <button onclick="changePage(1)">次のページ</button>
+</div>
+
+<div id="modal" onclick="closeModal()">
+    <span id="modal-close" onclick="closeModal()">&times;</span>
+    <button class="modal-nav left" onclick="event.stopPropagation(); navigateModal(-1)">‹</button>
+    <button class="modal-nav right" onclick="event.stopPropagation(); navigateModal(1)">›</button>
+    <div id="modal-content" onclick="event.stopPropagation()">
+        <div id="modal-body"></div>
+    </div>
+    <div class="modal-actions" onclick="event.stopPropagation()">
+        <button class="primary" onclick="downloadCurrentMedia()">⬇️ ダウンロード</button>
+        <button onclick="toggleModalTags()">🏷️ タグを見る</button>
+    </div>
+    <div id="modal-tags" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+    const USER_ID = '5908339';
+    const API_KEY = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
+
+    let activeTags = [];
+    let currentPage = 0;
+    let isFavMode = false;
+    let timeoutId;
+    let videoQueue = [];
+    let favorites = JSON.parse(localStorage.getItem('rule34_favs') || '[]');
+    let tagHistory = JSON.parse(localStorage.getItem('tag_history') || '[]');
+    let currentGalleryData = [];
+    let currentModalIndex = -1;
+
+    const tagInput = document.getElementById('tagInput');
+    const pageNumInput = document.getElementById('pageNumInput');
+    const autoList = document.getElementById('autocomplete-list');
+    const gallery = document.getElementById('gallery');
+    const status = document.getElementById('status');
+    const aiFilterCheck = document.getElementById('aiFilterCheck');
+
+    function addTag(tagName) {
+        tagName = tagName.trim().toLowerCase();
+        if (!tagName || activeTags.includes(tagName)) { tagInput.value = ''; autoList.style.display = 'none'; return; }
+        activeTags.push(tagName);
+        
+        // タグ履歴に追加
+        if (!tagHistory.includes(tagName)) {
+            tagHistory.unshift(tagName);
+            if (tagHistory.length > 10) tagHistory.pop();
+            localStorage.setItem('tag_history', JSON.stringify(tagHistory));
+            renderTagHistory();
+        }
+        
+        const chip = document.createElement('div');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${tagName} <span onclick="removeTag('${tagName}', this)">×</span>`;
+        document.getElementById('searchBoxWrapper').insertBefore(chip, tagInput);
+        tagInput.value = '';
+        autoList.style.display = 'none';
+    }
+
+    window.removeTag = (tagName, element) => {
+        activeTags = activeTags.filter(t => t !== tagName);
+        element.parentElement.remove();
+    };
+
+    tagInput.addEventListener('input', () => {
+        clearTimeout(timeoutId);
+        const words = tagInput.value.split(/\s+/);
+        const currentWord = words[words.length - 1].trim();
+        if (currentWord.length < 2) { autoList.style.display = 'none'; return; }
+        timeoutId = setTimeout(async () => {
+            const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + currentWord)}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    autoList.innerHTML = '';
+                    data.slice(0, 10).forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.innerHTML = `${item.value} <span style="float:right;color:#8b949e">${item.label}</span>`;
+                        div.onclick = () => addTag(item.value);
+                        autoList.appendChild(div);
+                    });
+                    autoList.style.display = 'block';
+                }
+            } catch (e) {}
+        }, 300);
+    });
+
+    async function performSearch(page = 0) {
+        if (isFavMode) return;
+        currentPage = parseInt(page);
+        pageNumInput.value = currentPage;
+        
+        // 入力中の文字があればタグに追加
+        if (tagInput.value.trim()) addTag(tagInput.value.trim());
+
+        gallery.innerHTML = '';
+        videoQueue = [];
+        status.innerHTML = '<span class="spinner"></span> 通信中...';
+        
+        // クエリ構築
+        let queryArray = [...activeTags];
+        
+        // AIフィルタがONなら -ai_generated を追加
+        if (aiFilterCheck.checked) {
+            queryArray.push('-ai_generated');
+        }
+        
+        // ソート追加
+        if (document.getElementById('sortSelect').value) {
+            queryArray.push(document.getElementById('sortSelect').value);
+        }
+
+        const queryStr = queryArray.join(' ');
+        const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const data = await res.json();
+            currentGalleryData = data || [];
+            renderGallery(currentGalleryData);
+            status.innerText = '';
+            window.scrollTo(0, 0);
+        } catch (e) { 
+            status.innerText = '⚠️ エラーが発生しました: ' + e.message; 
+            console.error('Search error:', e);
+        }
+    }
+
+    function renderGallery(data) {
+        gallery.innerHTML = '';
+        if (!data || data.length === 0) { status.innerText = '❌ 結果が見つかりませんでした。'; return; }
+        data.forEach((post, index) => {
+            const isVideo = post.file_url.match(/\.(mp4|webm)$/i);
+            const isFaved = favorites.some(f => f.id === post.id);
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="media-box" onmouseenter="playVideo(this, '${post.file_url}')" onmouseleave="stopVideo(this)" onclick="openModal('${post.file_url}', ${!!isVideo}, ${index})">
+                    <img src="${post.sample_url || post.preview_url || post.file_url}" loading="lazy" onerror="this.src='${post.preview_url || post.file_url}'">
+                    ${isVideo ? '<div class="video-indicator">VIDEO</div>' : ''}
+                </div>
+                <button class="fav-btn ${isFaved ? 'active' : ''}">❤</button>
+            `;
+            card.querySelector('.fav-btn').onclick = (e) => { e.stopPropagation(); toggleFav(post, e.target); };
+            gallery.appendChild(card);
+        });
+        renderPageButtons();
+    }
+
+    function playVideo(container, url) {
+        let video = container.querySelector('video');
+        if (!video) {
+            video = document.createElement('video');
+            video.src = url; video.muted = video.loop = true; video.preload = "auto";
+            container.appendChild(video);
+            videoQueue.push(container);
+            if (videoQueue.length > 10) {
+                const old = videoQueue.shift();
+                const oldV = old.querySelector('video');
+                if (oldV) { oldV.pause(); oldV.src = ""; oldV.remove(); old.querySelector('img').style.display = "block"; }
+            }
+        }
+        video.style.display = "block";
+        container.querySelector('img').style.display = "none";
+        video.play().catch(()=>{});
+    }
+
+    function stopVideo(container) {
+        const video = container.querySelector('video');
+        if (video) { video.pause(); video.style.display = "none"; container.querySelector('img').style.display = "block"; }
+    }
+
+    function openModal(url, isVideo, index = -1) {
+        currentModalIndex = index;
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = isVideo 
+            ? `<video src="${url}" controls autoplay loop></video>`
+            : `<img src="${url}" onerror="this.src='${url.replace('sample', 'preview')}'; this.onerror=null;">`;
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('modal-tags').style.display = 'none';
+        document.getElementById('modal-tags').innerHTML = '';
+        const actionsBar = document.querySelector('.modal-actions');
+        actionsBar.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('modal-body').innerHTML = '';
+        document.getElementById('modal-tags').style.display = 'none';
+        document.getElementById('modal-tags').innerHTML = '';
+        const actionsBar = document.querySelector('.modal-actions');
+        if (actionsBar) actionsBar.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function toggleFav(post, btn) {
+        const index = favorites.findIndex(f => f.id === post.id);
+        if (index > -1) { favorites.splice(index, 1); btn.classList.remove('active'); }
+        else { favorites.push(post); btn.classList.add('active'); }
+        localStorage.setItem('rule34_favs', JSON.stringify(favorites));
+        if (isFavMode) renderGallery(favorites);
+    }
+
+    function toggleFavMode() {
+        isFavMode = !isFavMode;
+        const btn = document.getElementById('favShowBtn');
+        const nav = document.getElementById('bottomNav');
+        if (isFavMode) {
+            btn.style.background = 'var(--fav)'; btn.style.color = 'white'; nav.style.display = 'none';
+            renderGallery(favorites);
+        } else {
+            btn.style.background = 'var(--card)'; btn.style.color = 'var(--accent)'; nav.style.display = 'flex';
+            performSearch(0);
+        }
+    }
+
+    function changePage(d) { 
+        closeModal();
+        currentPage = Math.max(0, currentPage + d); 
+        performSearch(currentPage); 
+    }
+    
+    // タグ履歴を表示
+    function renderTagHistory() {
+        const historyDiv = document.getElementById('tagHistory');
+        if (tagHistory.length === 0) {
+            historyDiv.innerHTML = '';
+            return;
+        }
+        historyDiv.innerHTML = '<small style="color:#8b949e">最近使ったタグ: </small>' + 
+            tagHistory.map(tag => `<span class="tag-history-item" onclick="addTag('${tag}')">${tag}</span>`).join('');
+    }
+    
+    // グリッドサイズ変更
+    window.changeGridSize = (size) => {
+        gallery.className = 'grid';
+        if (size !== 'medium') gallery.classList.add(size);
+        localStorage.setItem('grid_size', size);
+    };
+    
+    // 全タグクリア
+    window.clearAllTags = () => {
+        activeTags = [];
+        document.querySelectorAll('.tag-chip').forEach(el => el.remove());
+    };
+    
+    // お気に入りエクスポート
+    window.exportFavorites = () => {
+        const dataStr = JSON.stringify(favorites, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rule34_favorites_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert(`${favorites.length}件のお気に入りをエクスポートしました`);
+    };
+    
+    // お気に入りインポート
+    window.importFavorites = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (Array.isArray(imported)) {
+                    const before = favorites.length;
+                    imported.forEach(item => {
+                        if (!favorites.some(f => f.id === item.id)) {
+                            favorites.push(item);
+                        }
+                    });
+                    localStorage.setItem('rule34_favs', JSON.stringify(favorites));
+                    alert(`${favorites.length - before}件の新しいお気に入りをインポートしました`);
+                    if (isFavMode) renderGallery(favorites);
+                }
+            } catch (err) {
+                alert('ファイルの読み込みに失敗しました: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    };
+    
+    // 現在のメディアをダウンロード
+    window.downloadCurrentMedia = () => {
+        if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
+        const post = currentGalleryData[currentModalIndex];
+        const url = post.file_url;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = url.split('/').pop();
+        a.target = '_blank';
+        a.click();
+    };
+    
+    // モーダル内ナビゲーション
+    window.navigateModal = (direction) => {
+        if (currentGalleryData.length === 0) return;
+        currentModalIndex += direction;
+        if (currentModalIndex < 0) currentModalIndex = currentGalleryData.length - 1;
+        if (currentModalIndex >= currentGalleryData.length) currentModalIndex = 0;
+        const post = currentGalleryData[currentModalIndex];
+        const isVideo = post.file_url.match(/\.(mp4|webm)$/i);
+        openModal(post.file_url, !!isVideo, currentModalIndex);
+    };
+    
+    // モーダルタグ表示切り替え
+    window.toggleModalTags = () => {
+        const tagsDiv = document.getElementById('modal-tags');
+        if (tagsDiv.style.display === 'none' || !tagsDiv.style.display) {
+            if (currentModalIndex >= 0 && currentGalleryData[currentModalIndex]) {
+                const post = currentGalleryData[currentModalIndex];
+                const tags = post.tags ? post.tags.split(' ') : [];
+                tagsDiv.innerHTML = tags.map(tag => 
+                    `<span class="tag-item" onclick="addTag('${tag}'); closeModal(); performSearch(0);">${tag}</span>`
+                ).join('');
+                tagsDiv.style.display = 'block';
+            }
+        } else {
+            tagsDiv.style.display = 'none';
+        }
+    };
+    
+    // ページボタンを生成
+    function renderPageButtons() {
+        const container = document.getElementById('pageButtons');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        // 現在のページを中心に前後2ページずつ表示（合計5ページ）
+        const start = Math.max(0, currentPage - 2);
+        const end = start + 4;
+        
+        for (let i = start; i <= end; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i + 1; // 表示は1から始める
+            btn.onclick = () => performSearch(i);
+            container.appendChild(btn);
+        }
+    }
+    
+    // トップにスクロール
+    window.scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    
+    // スクロール時のトップボタン表示
+    window.addEventListener('scroll', () => {
+        const btn = document.getElementById('scrollTopBtn');
+        if (window.scrollY > 300) {
+            btn.style.display = 'block';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+    
+    // キーボードショートカット
+    document.addEventListener('keydown', (e) => {
+        // モーダルが開いている場合
+        if (document.getElementById('modal').style.display === 'flex') {
+            if (e.key === 'Escape') {
+                closeModal();
+            } else if (e.key === 'ArrowLeft') {
+                navigateModal(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateModal(1);
+            }
+            return;
+        }
+        
+        // 通常時
+        if (e.target === tagInput) return; // 入力中は無効
+        
+        if (e.key === 'ArrowLeft') {
+            changePage(-1);
+        } else if (e.key === 'ArrowRight') {
+            changePage(1);
+        }
+    });
+    
+    tagInput.onkeydown = (e) => { if(e.key === 'Enter') { currentPage = 0; performSearch(0); } };
+    document.getElementById('searchBtn').onclick = () => { currentPage = 0; performSearch(0); };
+    document.addEventListener('click', (e) => { if (e.target !== tagInput) autoList.style.display = 'none'; });
+    
+    // ページ読み込み時に自動的に検索を実行
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTagHistory();
+        const savedSize = localStorage.getItem('grid_size');
+        if (savedSize) changeGridSize(savedSize);
+        performSearch(0);
+    });
+</script>
+</body>
+</html>
