@@ -4,775 +4,569 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="referrer" content="no-referrer"/>
-    <title>S34rch</title>
+    <title>Rule34 Search</title>
+    
+    <!-- Google Fonts & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <style>
         :root { 
-            --bg: #0f0f0f; 
-            --bg-secondary: #1a1a1a;
-            --text: #e5e5e5; 
-            --text-secondary: #a0a0a0;
-            --accent: #ffffff; 
-            --accent-hover: #d4d4d4;
-            --card: #1f1f1f; 
-            --border: #2a2a2a; 
-            --success: #525252; 
-            --fav: #ef4444;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --hover: #2a2a2a;
+            --bg: #202124;
+            --bg-secondary: #292a2d;
+            --text: #e8eaed; 
+            --text-secondary: #9aa0a6;
+            --accent: #8ab4f8; 
+            --card: #303134; 
+            --border: #3c4043; 
+            --hover: #3c4043;
+            --fav: #f28b82;
         }
         
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
         
         body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
             color: var(--text); 
             overflow-y: scroll;
-            line-height: 1.6;
         }
+        
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            user-select: none;
+        }
+        
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-20 { font-size: 20px; }
         
         /* ヘッダー */
         .header {
             background: var(--card);
-            backdrop-filter: none;
             border-bottom: 1px solid var(--border);
-            padding: 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         
         .header-content {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 16px 40px;
+            padding: 8px 24px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 20px;
+            gap: 16px;
         }
         
-        .header-title {
+        .header-brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .header-brand .accent {
+            color: var(--accent);
+        }
+        
+        .header-search {
+            flex: 1;
+            max-width: 692px;
+            position: relative;
+        }
+        
+        .header-search-box {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            padding: 0 16px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            transition: all 0.2s;
         }
         
-        .header-logo {
-            width: 42px;
-            height: 42px;
+        .header-search-box:hover {
             background: var(--card);
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header-search-box:focus-within {
+            background: var(--card);
+            box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header-search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .header-search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--text);
-            letter-spacing: -1px;
+            transition: all 0.2s;
         }
         
-        .header-title h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: var(--text);
+        .icon-btn:hover {
+            background: var(--hover);
         }
         
-        .header-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 400;
-            margin-top: 2px;
+        .icon-btn.active .material-icons {
+            color: var(--fav);
         }
         
-        .header-stats {
+        /* オートコンプリート */
+        .autocomplete {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 2000;
+        }
+        
+        .autocomplete.show {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
             display: flex;
+            align-items: center;
             gap: 12px;
-            align-items: center;
+            transition: background 0.2s;
         }
         
-        .stat-item {
+        .autocomplete-item:hover {
+            background: var(--hover);
+        }
+        
+        .autocomplete-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .autocomplete-count {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        /* フィルターバー */
+        .filter-bar {
+            display: flex;
+            gap: 0;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        .filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-chip {
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+        
+        .filter-chip:hover {
+            background: var(--hover);
+            color: var(--text);
+        }
+        
+        .filter-chip.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .filter-chip .material-icons {
+            font-size: 18px;
+        }
+        
+        /* タグ表示 */
+        #activeTagsDisplay {
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .tag-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
             background: var(--bg-secondary);
-            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 13px;
+        }
+        
+        .tag-badge .material-icons {
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* コンテンツエリア */
+        .content-area {
+            padding: 16px 24px;
+        }
+        
+        #status {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-secondary);
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ギャラリー */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        
+        .card {
+            background: var(--card);
             border-radius: 8px;
             border: 1px solid var(--border);
-            transition: all 0.2s ease;
-        }
-        
-        .stat-item:hover {
-            background: var(--hover);
-            border-color: var(--text-secondary);
-        }
-        
-        .stat-item .icon {
-            font-size: 16px;
-        }
-        
-        .stat-item .label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        
-        .stat-item .number {
-            color: var(--text);
-            font-weight: 700;
-            font-size: 16px;
-        }
-        
-        /* メインコンテナ */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 40px;
-        }
-        
-        .search-container { 
-            max-width: 900px; 
-            margin: 0 auto 40px; 
-            position: relative; 
-        }
-        .search-container { 
-            max-width: 900px; 
-            margin: 0 auto 30px; 
-            position: relative; 
-        }
-        
-        .search-box-wrapper {
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
-            padding: 14px 18px;
-            border-radius: 8px; 
-            border: 2px solid var(--border); 
-            background: var(--bg-secondary);
-            min-height: 56px; 
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .search-box-wrapper:focus-within {
-            border-color: var(--text-secondary);
-            background: var(--card);
-        }
-        
-        .tag-chip { 
-            background: var(--success);
-            color: var(--text); 
-            padding: 7px 14px; 
-            border-radius: 6px; 
-            font-size: 14px; 
-            font-weight: 600; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border);
-        }
-        
-        .tag-chip:hover {
-            background: var(--hover);
-            border-color: var(--text-secondary);
-        }
-        
-        .tag-chip span {
-            cursor: pointer;
-            opacity: 0.9;
-            transition: opacity 0.2s;
-        }
-        
-        .tag-chip span:hover {
-            opacity: 1;
-        }
-        
-        #tagInput { 
-            flex: 1; 
-            min-width: 200px; 
-            border: none; 
-            background: transparent; 
-            color: var(--text); 
-            outline: none; 
-            font-size: 15px;
-            font-family: inherit;
-        }
-        
-        #tagInput::placeholder {
-            color: var(--text-secondary);
-        }
-        
-        .controls { 
-            display: flex; 
-            gap: 12px; 
-            margin-top: 12px; 
-            flex-wrap: wrap; 
-            align-items: center; 
-        }
-        
-        select, button, .ai-toggle { 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            font-weight: 600; 
-            cursor: pointer; 
-            background: var(--bg-secondary); 
-            color: var(--text);
-            font-size: 14px;
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-        
-        select:hover, button:hover {
-            background: var(--hover);
-            border-color: var(--text-secondary);
-        }
-        
-        button#searchBtn { 
-            background: var(--success);
-            border: 1px solid var(--text-secondary); 
-            flex: 1;
-            min-width: 120px;
-            color: var(--text);
-        }
-        
-        button#searchBtn:hover {
-            background: var(--hover);
-            border-color: var(--text);
-        }
-        
-        button#favShowBtn {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-        
-        button#favShowBtn:hover {
-            border-color: var(--fav);
-            background: var(--hover);
-        }
-        
-        /* AIトグル */
-        .ai-toggle-wrapper { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            background: var(--bg-secondary); 
-            padding: 12px 16px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .ai-toggle-wrapper:hover {
-            background: var(--hover);
-            border-color: var(--text-secondary);
-        }
-        
-        .ai-toggle-wrapper input { 
-            cursor: pointer; 
-            width: 20px; 
-            height: 20px;
-            accent-color: var(--text);
-        }
-        
-        .ai-toggle-wrapper span {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        #autocomplete-list { 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            right: 0; 
-            background: var(--card); 
-            border: 2px solid var(--border); 
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            z-index: 2000; 
-            max-height: 320px; 
-            overflow-y: auto; 
-            display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-            margin-top: -8px;
-        }
-        
-        .autocomplete-item { 
-            padding: 14px 18px; 
-            cursor: pointer; 
-            border-bottom: 1px solid var(--border);
-            transition: all 0.2s ease;
-            font-size: 14px;
-            color: var(--text);
-        }
-        
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-        
-        .autocomplete-item:hover { 
-            background: var(--hover);
-        }
-
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
-            margin-top: 0;
-        }
-        
-        .card { 
-            background: var(--card); 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            overflow: hidden; 
-            height: 400px; 
+            overflow: hidden;
+            height: 320px;
             position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
         
         .card:hover {
             border-color: var(--accent);
         }
         
-        .media-box { 
-            width: 100%; 
-            height: 100%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: var(--bg); 
+        .media-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
             cursor: zoom-in;
             overflow: hidden;
         }
         
-        img, video { 
-            max-width: 100%; 
-            max-height: 100%; 
+        .media-box img,
+        .media-box video {
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
         }
         
-        .fav-btn { 
-            position: absolute; 
-            bottom: 12px; 
-            left: 12px; 
-            background: rgba(0, 0, 0, 0.8); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border); 
-            color: white; 
-            padding: 10px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            z-index: 10; 
-            font-size: 20px;
-            width: 44px;
-            height: 44px;
+        .fav-btn {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            z-index: 10;
+            transition: all 0.2s;
         }
         
         .fav-btn:hover {
-            background: rgba(0, 0, 0, 0.95);
-            border-color: var(--accent);
+            background: rgba(0, 0, 0, 0.9);
         }
         
-        .fav-btn.active { 
-            color: var(--fav); 
-            background: rgba(255, 0, 0, 0.2);
-            border: 2px solid var(--fav);
+        .fav-btn.active {
+            color: var(--fav);
         }
         
-        .video-indicator { 
-            position: absolute; 
-            top: 12px; 
-            right: 12px; 
-            background: rgba(255, 255, 255, 0.9); 
-            padding: 6px 12px; 
-            border-radius: 6px; 
-            font-size: 11px; 
-            color: var(--bg); 
-            pointer-events: none;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .pagination { 
-            display: flex; 
-            gap: 12px; 
-            justify-content: center; 
-            align-items: center; 
-            margin: 60px 0;
-            flex-wrap: wrap;
-        }
-        
-        .pagination button {
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-        
-        .pagination button:hover {
-            background: var(--accent);
+        .video-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
             color: white;
-            border-color: var(--accent);
-            transform: translateY(-2px);
         }
         
-        .page-num { 
-            width: 80px; 
-            text-align: center;
+        /* モーダル */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(32, 33, 36, 0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #modal.show {
+            display: flex;
+        }
+        
+        #modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+        
+        .modal-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        
+        .modal-nav.left {
+            left: 16px;
+        }
+        
+        .modal-nav.right {
+            right: 16px;
+        }
+        
+        #modal-content {
+            max-width: 90%;
+            max-height: calc(100vh - 180px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #modal-body img,
+        #modal-body video {
+            max-width: 100%;
+            max-height: calc(100vh - 180px);
+            object-fit: contain;
+        }
+        
+        .modal-actions {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: var(--card);
+            padding: 12px 16px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .modal-btn {
+            padding: 8px 16px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
+            border-radius: 16px;
             color: var(--text);
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-family: inherit;
-        }
-
-        #status { 
-            text-align: center; 
-            margin: 20px; 
-            color: var(--accent); 
-            font-weight: 600; 
-            min-height: 24px;
-            font-size: 15px;
-        }
-        
-        /* ローディングスピナー */
-        .spinner { 
-            display: inline-block; 
-            width: 20px; 
-            height: 20px; 
-            border: 3px solid rgba(59, 130, 246, 0.2); 
-            border-top-color: var(--accent); 
-            border-radius: 50%; 
-            animation: spin 0.8s linear infinite; 
-        }
-        
-        @keyframes spin { 
-            to { transform: rotate(360deg); } 
-        }
-        
-        /* タグ履歴 */
-        .tag-history { 
-            margin-top: 16px; 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-        }
-        
-        .tag-history-item { 
-            background: var(--bg-secondary); 
-            color: var(--text-secondary); 
-            padding: 6px 12px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            border: 1px solid var(--border);
-        }
-        
-        .tag-history-item:hover { 
-            background: var(--accent); 
-            color: white;
-            border-color: var(--accent);
-            transform: translateY(-1px);
-        }
-        
-        /* グリッドサイズ切り替え */
-        .grid.small { 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-        }
-        
-        .grid.small .card { 
-            height: 300px; 
-        }
-        
-        .grid.large { 
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-        }
-        
-        .grid.large .card { 
-            height: 500px; 
-        }
-
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; }
-        #modal-content { max-width: 95%; max-height: calc(100vh - 180px); position: relative; display: flex; align-items: center; justify-content: center; }
-        #modal-body { max-height: 100%; display: flex; align-items: center; justify-content: center; }
-        #modal-body img, #modal-body video { max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; }
-        #modal-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2); z-index: 10; }
-        #modal-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
-        
-        /* モーダルナビゲーションボタン */
-        .modal-nav { position: fixed; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s; z-index: 2001; }
-        .modal-nav:hover { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(1.1); }
-        .modal-nav.left { left: 20px; }
-        .modal-nav.right { right: 20px; }
-        
-        /* モーダル下部のアクションバー */
-        .modal-actions { 
-            position: fixed; 
-            bottom: 30px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            display: none;  /* 初期状態は非表示 */
-            gap: 12px; 
-            background: rgba(13,17,23,0.95); 
-            backdrop-filter: blur(20px); 
-            padding: 12px 20px; 
-            border-radius: 50px; 
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            z-index: 2003;
-        }
-        .modal-actions button { 
-            padding: 10px 20px; 
-            background: rgba(88,166,255,0.2); 
-            border: 1px solid var(--accent); 
-            color: var(--accent); 
-            font-weight: 600; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            transition: all 0.3s;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-        .modal-actions button:hover { 
-            background: var(--accent); 
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(88,166,255,0.4);
-        }
-        .modal-actions button.primary {
-            background: var(--accent);
-            color: #000;
-        }
-        .modal-actions button.primary:hover {
-            background: #6eb5ff;
-            box-shadow: 0 4px 16px rgba(88,166,255,0.6);
+            transition: all 0.2s;
         }
         
-        /* トップに戻るボタン */
-        #scrollTopBtn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--accent); border: none; border-radius: 50%; color: #000; font-size: 24px; cursor: pointer; display: none; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        #scrollTopBtn:hover { transform: scale(1.1); }
-        
-        /* ツールバー */
-        .toolbar { 
-            display: flex; 
-            gap: 12px; 
-            justify-content: center; 
-            margin: 30px 0; 
-            flex-wrap: wrap; 
+        .modal-btn:hover {
+            background: var(--hover);
         }
         
-        .toolbar button { 
-            padding: 10px 20px; 
-            font-size: 14px; 
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            transition: all 0.2s ease;
-            font-weight: 600;
-            border-radius: 10px;
-        }
-        
-        .toolbar button:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-        }
-        
-        /* ページボタン */
-        .page-btn {
-            min-width: 44px;
-            padding: 10px 16px;
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            font-family: inherit;
-        }
-        
-        .page-btn:hover {
-            background: var(--bg-secondary);
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
-        
-        .page-btn.active {
-            background: var(--accent);
-            color: white;
-            font-weight: 700;
-            border-color: var(--accent);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-        }
         #modal-tags {
             position: fixed;
-            bottom: 120px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             max-width: 80%;
             max-height: 40vh;
             overflow-y: auto;
-            background: rgba(13,17,23,0.95);
-            backdrop-filter: blur(20px);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            z-index: 2002;
-            display: none;  /* 初期状態は非表示 */
+            background: var(--card);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: none;
         }
-        #modal-tags .tag-item {
+        
+        #modal-tags.show {
+            display: block;
+        }
+        
+        .modal-tag {
             display: inline-block;
-            background: rgba(88,166,255,0.2);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 6px 12px;
             margin: 4px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        #modal-tags .tag-item:hover {
-            background: var(--accent);
-            color: #000;
+            transition: all 0.2s;
         }
         
-        /* ページボタン */
-        .page-btn {
-            min-width: 40px;
-            padding: 8px 12px;
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .page-btn:hover {
-            background: rgba(88,166,255,0.2);
+        .modal-tag:hover {
+            background: var(--hover);
             border-color: var(--accent);
         }
+        
+        /* ページネーション */
+        .pagination {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            padding: 10px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--hover);
+            border-color: var(--accent);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-num {
+            width: 60px;
+            text-align: center;
+            padding: 10px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text);
+            font-size: 14px;
+        }
+        
+        #pageButtons {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .page-btn {
+            min-width: 36px;
+            padding: 8px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .page-btn:hover {
+            background: var(--hover);
+        }
+        
         .page-btn.active {
             background: var(--accent);
-            color: #000;
-            font-weight: bold;
+            color: var(--bg);
+            border-color: var(--accent);
         }
         
-        /* レスポンシブデザイン */
-        @media (max-width: 1200px) {
-            .main-container {
-                padding: 30px;
-            }
-            
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 20px;
-            }
-        }
-        
+        /* レスポンシブ */
         @media (max-width: 768px) {
             .header-content {
-                padding: 16px 20px;
-                flex-direction: column;
-                align-items: flex-start;
+                padding: 8px 16px;
                 gap: 12px;
             }
             
-            .header-logo {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
+            .header-brand {
+                font-size: 18px;
             }
             
-            .header-title h1 {
-                font-size: 20px;
+            .filter-bar {
+                padding: 0 16px;
             }
             
-            .header-subtitle {
-                font-size: 12px;
-            }
-            
-            .header-stats {
-                width: 100%;
-                justify-content: space-between;
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-            
-            .stat-item {
-                padding: 8px 12px;
-                font-size: 12px;
-                flex: 1;
-                min-width: 120px;
-            }
-            
-            .stat-item .icon {
-                font-size: 16px;
-            }
-            
-            .stat-item .number {
-                font-size: 14px;
-            }
-            
-            .main-container {
-                padding: 20px;
-            }
-            
-            .search-section {
-                padding: 20px;
-            }
-            
-            .search-box-wrapper {
-                padding: 10px 12px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .controls > * {
-                width: 100%;
-            }
-            
-            button#searchBtn {
-                min-width: 100%;
-            }
-            
-            .toolbar {
-                gap: 8px;
-            }
-            
-            .toolbar button {
-                padding: 8px 14px;
-                font-size: 13px;
+            .content-area {
+                padding: 12px 16px;
             }
             
             .grid {
@@ -781,192 +575,25 @@
             }
             
             .card {
-                height: 300px;
-            }
-            
-            .grid.small {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-            
-            .grid.small .card {
-                height: 260px;
-            }
-            
-            .grid.large {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .grid.large .card {
-                height: 360px;
-            }
-            
-            #modal-content {
-                max-width: 100%;
-                max-height: calc(100vh - 160px);
-            }
-            
-            #modal-body img, #modal-body video {
-                max-height: calc(100vh - 160px);
-            }
-            
-            .modal-nav {
-                width: 48px;
-                height: 48px;
-                font-size: 22px;
-            }
-            
-            .modal-nav.left {
-                left: 15px;
-            }
-            
-            .modal-nav.right {
-                right: 15px;
-            }
-            
-            #modal-close {
-                top: 15px;
-                right: 15px;
-                width: 40px;
-                height: 40px;
-                font-size: 24px;
-            }
-            
-            .modal-actions {
-                bottom: 20px;
-                padding: 12px 16px;
-                gap: 8px;
-                max-width: 92%;
-                flex-wrap: wrap;
-            }
-            
-            .modal-actions button {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            
-            #modal-tags {
-                bottom: 100px;
-                max-width: 92%;
-                padding: 16px;
-                max-height: 35vh;
-            }
-            
-            .pagination {
-                gap: 8px;
-                margin: 40px 0;
-            }
-            
-            .pagination button {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            
-            .page-num {
-                width: 70px;
-                padding: 10px;
-            }
-            
-            #pageButtons {
-                flex-wrap: wrap;
-            }
-            
-            .page-btn {
-                min-width: 40px;
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            
-            #scrollTopBtn {
-                width: 48px;
-                height: 48px;
-                font-size: 20px;
-                bottom: 20px;
-                right: 20px;
+                height: 280px;
             }
         }
         
         @media (max-width: 480px) {
-            .header-content {
-                padding: 12px 16px;
+            .header-brand {
+                display: none;
             }
             
-            .header-logo {
-                width: 36px;
-                height: 36px;
-                font-size: 18px;
-            }
-            
-            .header-title h1 {
-                font-size: 18px;
-            }
-            
-            .stat-item {
-                padding: 6px 10px;
-                font-size: 11px;
-                min-width: 100px;
-            }
-            
-            .stat-item .label {
-                font-size: 11px;
-            }
-            
-            .stat-item .number {
-                font-size: 13px;
-            }
-            
-            .main-container {
-                padding: 16px;
-            }
-            
-            .search-section {
-                padding: 16px;
-            }
-            
-            .toolbar button {
-                padding: 7px 12px;
-                font-size: 12px;
+            .filter-chip span:not(.material-icons) {
+                display: none;
             }
             
             .grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 10px;
             }
             
             .card {
-                height: 260px;
-            }
-            
-            .modal-nav {
-                width: 42px;
-                height: 42px;
-                font-size: 20px;
-            }
-            
-            .modal-nav.left {
-                left: 10px;
-            }
-            
-            .modal-nav.right {
-                right: 10px;
-            }
-            
-            .modal-actions button {
-                padding: 8px 12px;
-                font-size: 12px;
-                flex: 1 1 auto;
-                min-width: 100px;
-            }
-            
-            #pageButtons button {
-                padding: 7px 10px;
-                font-size: 12px;
-            }
-            
-            #scrollTopBtn {
-                width: 44px;
-                height: 44px;
-                bottom: 16px;
-                right: 16px;
+                height: 240px;
             }
         }
     </style>
@@ -975,89 +602,82 @@
 
 <header class="header">
     <div class="header-content">
-        <div class="header-title">
-            <div class="header-logo">34</div>
-            <div>
-                <h1>Rule34 Engine</h1>
-                <div class="header-subtitle">AI-Powered Media Gallery</div>
-            </div>
+        <div class="header-brand" onclick="location.reload()">
+            Rule<span class="accent">34</span>
         </div>
-        <div class="header-stats">
-            <div class="stat-item">
-                <span class="icon">❤️</span>
-                <div>
-                    <div class="label">お気に入り</div>
-                    <div class="number" id="favCount">0</div>
-                </div>
+        
+        <div class="header-search">
+            <div class="header-search-box">
+                <span class="material-icons md-20" style="color: var(--text-secondary);">search</span>
+                <input type="text" id="searchInput" autocomplete="off" placeholder="タグで検索">
+                <span class="material-icons md-20 icon-btn" id="clearBtn" style="display: none;">close</span>
             </div>
-            <div class="stat-item">
-                <span class="icon">📄</span>
-                <div>
-                    <div class="label">ページ</div>
-                    <div class="number" id="currentPageDisplay">1</div>
-                </div>
-            </div>
+            <div class="autocomplete" id="autocomplete"></div>
+        </div>
+        
+        <div>
+            <button class="icon-btn" id="favBtn" onclick="toggleFavMode()">
+                <span class="material-icons">favorite_border</span>
+            </button>
         </div>
     </div>
 </header>
 
-<div class="main-container">
-<div class="search-container">
-    <div class="search-box-wrapper" id="searchBoxWrapper">
-        <input type="text" id="tagInput" autocomplete="off" placeholder="タグを入力（空で全件表示）...">
+<div class="filter-bar">
+    <div class="filter-chip active" data-filter="all">
+        <span class="material-icons md-18">apps</span>
+        <span>すべて</span>
     </div>
-    <div id="autocomplete-list"></div>
-    <div id="tagHistory" class="tag-history"></div>
-    <div class="controls">
-        <select id="sortSelect">
-            <option value="">新着順</option>
-            <option value="sort:score:desc">スコア順</option>
-            <option value="sort:favcount:desc">お気に入り順</option>
-        </select>
-        
-        <label class="ai-toggle-wrapper">
-            <input type="checkbox" id="aiFilterCheck" checked>
-            <span>AI作品を隠す</span>
-        </label>
-
-        <button id="searchBtn">検索する</button>
-        <button id="favShowBtn" onclick="toggleFavMode()">❤ お気に入り</button>
+    <div class="filter-chip" data-filter="sort:score:desc">
+        <span class="material-icons md-18">trending_up</span>
+        <span>高評価</span>
+    </div>
+    <div class="filter-chip" data-filter="sort:favcount:desc">
+        <span class="material-icons md-18">star</span>
+        <span>人気</span>
+    </div>
+    <div class="filter-chip active" id="aiFilter" data-filter="ai">
+        <span class="material-icons md-18">block</span>
+        <span>AI除外</span>
     </div>
 </div>
 
-<div class="toolbar">
-    <button onclick="changeGridSize('small')">小</button>
-    <button onclick="changeGridSize('medium')">中</button>
-    <button onclick="changeGridSize('large')">大</button>
-    <button onclick="exportFavorites()">💾 お気に入りをエクスポート</button>
-    <button onclick="document.getElementById('importFile').click()">📂 お気に入りをインポート</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFavorites(event)">
-    <button onclick="clearAllTags()">🗑️ タグをクリア</button>
-</div>
+<div id="activeTagsDisplay"></div>
 
-<div id="status"></div>
-<div id="gallery" class="grid"></div>
-</div>
-
-<button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
-
-<div class="pagination" id="bottomNav">
-    <button onclick="changePage(-1)">前のページ</button>
-    <input type="number" id="pageNumInput" class="page-num" value="0" min="0" onchange="performSearch(this.value)">
-    <div id="pageButtons" style="display: flex; gap: 5px;"></div>
-    <button onclick="changePage(1)">次のページ</button>
+<div class="content-area">
+    <div id="status"></div>
+    <div id="gallery" class="grid"></div>
+    
+    <div class="pagination" id="pagination">
+        <button onclick="changePage(-1)" id="prevBtn">前のページ</button>
+        <input type="number" class="page-num" id="pageInput" value="1" min="1" onchange="goToPage(this.value)">
+        <div id="pageButtons"></div>
+        <button onclick="changePage(1)" id="nextBtn">次のページ</button>
+    </div>
 </div>
 
 <div id="modal" onclick="closeModal()">
-    <span id="modal-close" onclick="closeModal()">&times;</span>
-    <button class="modal-nav left" onclick="event.stopPropagation(); navigateModal(-1)">‹</button>
-    <button class="modal-nav right" onclick="event.stopPropagation(); navigateModal(1)">›</button>
+    <button class="icon-btn" id="modal-close" onclick="closeModal()">
+        <span class="material-icons">close</span>
+    </button>
+    <button class="icon-btn modal-nav left" onclick="event.stopPropagation(); navigateModal(-1)">
+        <span class="material-icons">chevron_left</span>
+    </button>
+    <button class="icon-btn modal-nav right" onclick="event.stopPropagation(); navigateModal(1)">
+        <span class="material-icons">chevron_right</span>
+    </button>
     <div id="modal-content" onclick="event.stopPropagation()">
         <div id="modal-body"></div>
     </div>
     <div class="modal-actions" onclick="event.stopPropagation()">
-        <button class="primary" onclick="downloadCurrentMedia()">⬇️ ダウンロード</button>
-        <button onclick="toggleModalTags()">🏷️ タグを見る</button>
+        <button class="modal-btn" onclick="downloadMedia()">
+            <span class="material-icons md-18">download</span>
+            ダウンロード
+        </button>
+        <button class="modal-btn" onclick="toggleModalTags()">
+            <span class="material-icons md-18">label</span>
+            タグ
+        </button>
     </div>
     <div id="modal-tags" onclick="event.stopPropagation()"></div>
 </div>
@@ -1068,452 +688,352 @@
 
     let activeTags = [];
     let currentPage = 0;
+    let currentSort = '';
+    let aiFilterEnabled = true;
     let isFavMode = false;
-    let timeoutId;
-    let videoQueue = [];
     let favorites = JSON.parse(localStorage.getItem('rule34_favs') || '[]');
-    let tagHistory = JSON.parse(localStorage.getItem('tag_history') || '[]');
     let currentGalleryData = [];
     let currentModalIndex = -1;
-    let hasMoreResults = true; // 次のページがあるかどうか
+    let hasMoreResults = true;
+    let videoQueue = [];
+    let timeoutId;
 
-    const tagInput = document.getElementById('tagInput');
-    const pageNumInput = document.getElementById('pageNumInput');
-    const autoList = document.getElementById('autocomplete-list');
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const autocomplete = document.getElementById('autocomplete');
+    const activeTagsDisplay = document.getElementById('activeTagsDisplay');
     const gallery = document.getElementById('gallery');
     const status = document.getElementById('status');
-    const aiFilterCheck = document.getElementById('aiFilterCheck');
+    const pageInput = document.getElementById('pageInput');
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+    const modalTags = document.getElementById('modal-tags');
 
-    function addTag(tagName) {
-        tagName = tagName.trim().toLowerCase();
-        if (!tagName || activeTags.includes(tagName)) { tagInput.value = ''; autoList.style.display = 'none'; return; }
-        activeTags.push(tagName);
+    // 初期化
+    window.addEventListener('DOMContentLoaded', () => {
+        performSearch(0);
         
-        // タグ履歴に追加
-        if (!tagHistory.includes(tagName)) {
-            tagHistory.unshift(tagName);
-            if (tagHistory.length > 10) tagHistory.pop();
-            localStorage.setItem('tag_history', JSON.stringify(tagHistory));
-            renderTagHistory();
-        }
-        
-        const chip = document.createElement('div');
-        chip.className = 'tag-chip';
-        chip.innerHTML = `${tagName} <span onclick="removeTag('${tagName}', this)">×</span>`;
-        document.getElementById('searchBoxWrapper').insertBefore(chip, tagInput);
-        tagInput.value = '';
-        autoList.style.display = 'none';
-    }
-
-    window.removeTag = (tagName, element) => {
-        activeTags = activeTags.filter(t => t !== tagName);
-        element.parentElement.remove();
-    };
-
-    tagInput.addEventListener('input', () => {
-        clearTimeout(timeoutId);
-        const words = tagInput.value.split(/\s+/);
-        const currentWord = words[words.length - 1].trim();
-        if (currentWord.length < 2) { autoList.style.display = 'none'; return; }
-        timeoutId = setTimeout(async () => {
-            const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + currentWord)}`;
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data && data.length > 0) {
-                    autoList.innerHTML = '';
-                    data.slice(0, 10).forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'autocomplete-item';
-                        div.innerHTML = `${item.value} <span style="float:right;color:#8b949e">${item.label}</span>`;
-                        div.onclick = () => addTag(item.value);
-                        autoList.appendChild(div);
-                    });
-                    autoList.style.display = 'block';
+        // 検索入力
+        searchInput.addEventListener('input', () => {
+            clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+            
+            clearTimeout(timeoutId);
+            const query = searchInput.value.trim();
+            
+            if (query.length < 2) {
+                autocomplete.classList.remove('show');
+                return;
+            }
+            
+            timeoutId = setTimeout(async () => {
+                const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + query)}`;
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        autocomplete.innerHTML = '';
+                        data.slice(0, 8).forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.innerHTML = `
+                                <span class="material-icons md-20">search</span>
+                                <span class="autocomplete-text">${item.value}</span>
+                                <span class="autocomplete-count">${item.label}</span>
+                            `;
+                            div.onclick = () => {
+                                addTag(item.value);
+                                searchInput.value = '';
+                                clearBtn.style.display = 'none';
+                                autocomplete.classList.remove('show');
+                            };
+                            autocomplete.appendChild(div);
+                        });
+                        autocomplete.classList.add('show');
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
-            } catch (e) {}
-        }, 300);
+            }, 150);
+        });
+        
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && searchInput.value.trim()) {
+                addTag(searchInput.value.trim());
+                searchInput.value = '';
+                clearBtn.style.display = 'none';
+                autocomplete.classList.remove('show');
+            }
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            autocomplete.classList.remove('show');
+            searchInput.focus();
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.header-search')) {
+                autocomplete.classList.remove('show');
+            }
+        });
+        
+        // フィルター
+        document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const filter = chip.getAttribute('data-filter');
+                
+                if (filter === 'ai') {
+                    aiFilterEnabled = !aiFilterEnabled;
+                    chip.classList.toggle('active');
+                } else if (filter === 'all') {
+                    currentSort = '';
+                    document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
+                        if (c.getAttribute('data-filter') !== 'ai') c.classList.remove('active');
+                    });
+                    chip.classList.add('active');
+                } else {
+                    currentSort = filter;
+                    document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
+                        if (c.getAttribute('data-filter') !== 'ai') c.classList.remove('active');
+                    });
+                    chip.classList.add('active');
+                }
+                performSearch(0);
+            });
+        });
     });
 
-    async function performSearch(page = 0) {
-        // お気に入りモードを解除
+    function addTag(tag) {
+        tag = tag.trim().toLowerCase();
+        if (!tag || activeTags.includes(tag)) return;
+        activeTags.push(tag);
+        renderTags();
+        performSearch(0);
+    }
+
+    function removeTag(tag) {
+        activeTags = activeTags.filter(t => t !== tag);
+        renderTags();
+        performSearch(0);
+    }
+
+    function renderTags() {
+        if (activeTags.length === 0) {
+            activeTagsDisplay.innerHTML = '';
+            return;
+        }
+        
+        activeTagsDisplay.innerHTML = '';
+        activeTags.forEach(tag => {
+            const badge = document.createElement('div');
+            badge.className = 'tag-badge';
+            badge.innerHTML = `
+                <span>${tag}</span>
+                <span class="material-icons md-18" onclick="removeTag('${tag}')">close</span>
+            `;
+            activeTagsDisplay.appendChild(badge);
+        });
+    }
+
+    async function performSearch(page) {
         if (isFavMode) {
             isFavMode = false;
-            const btn = document.getElementById('favShowBtn');
-            const nav = document.getElementById('bottomNav');
-            btn.style.background = 'var(--card)';
-            btn.style.color = 'var(--accent)';
-            nav.style.display = 'flex';
+            document.getElementById('favBtn').classList.remove('active');
+            document.getElementById('pagination').style.display = 'flex';
         }
         
         currentPage = parseInt(page);
-        pageNumInput.value = currentPage;
-        updateHeader();
+        pageInput.value = currentPage + 1;
         
-        // 入力中の文字があればタグに追加
-        if (tagInput.value.trim()) addTag(tagInput.value.trim());
-
         gallery.innerHTML = '';
-        videoQueue = [];
-        status.innerHTML = '<span class="spinner"></span> 通信中...';
+        status.innerHTML = '<span class="spinner"></span> 読み込み中...';
         
-        // クエリ構築
         let queryArray = [...activeTags];
+        if (aiFilterEnabled) queryArray.push('-ai_generated');
+        if (currentSort) queryArray.push(currentSort);
         
-        // AIフィルタがONなら -ai_generated を追加
-        if (aiFilterCheck.checked) {
-            queryArray.push('-ai_generated');
-        }
-        
-        // ソート追加
-        if (document.getElementById('sortSelect').value) {
-            queryArray.push(document.getElementById('sortSelect').value);
-        }
-
         const queryStr = queryArray.join(' ');
         const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
-
+        
         try {
             const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
             currentGalleryData = data || [];
-            
-            // 結果が40件未満なら最終ページ
             hasMoreResults = currentGalleryData.length >= 40;
-            
-            renderGallery(currentGalleryData);
-            updatePaginationButtons();
-            status.innerText = '';
+            renderGallery();
+            updatePagination();
+            status.innerHTML = '';
             window.scrollTo(0, 0);
-        } catch (e) { 
-            status.innerText = '⚠️ エラーが発生しました: ' + e.message; 
-            console.error('Search error:', e);
+        } catch (e) {
+            status.innerHTML = '⚠️ エラーが発生しました';
+            console.error(e);
         }
     }
 
-    function renderGallery(data) {
+    function renderGallery() {
         gallery.innerHTML = '';
-        if (!data || data.length === 0) { 
-            status.innerText = '❌ 結果が見つかりませんでした。'; 
-            hasMoreResults = false;
-            updatePaginationButtons();
-            return; 
+        if (!currentGalleryData || currentGalleryData.length === 0) {
+            status.innerHTML = '結果が見つかりませんでした';
+            return;
         }
-        currentGalleryData = data; // 現在表示中のデータを保存
-        data.forEach((post, index) => {
-            const isVideo = post.file_url.match(/\.(mp4|webm)$/i);
+        
+        currentGalleryData.forEach((post, index) => {
+            const isVideo = post.file_url && post.file_url.match(/\.(mp4|webm)$/i);
             const isFaved = favorites.some(f => f.id === post.id);
+            
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <div class="media-box" onmouseenter="playVideo(this, '${post.file_url}')" onmouseleave="stopVideo(this)" onclick="openModal('${post.file_url}', ${!!isVideo}, ${index})">
-                    <img src="${post.sample_url || post.preview_url || post.file_url}" loading="lazy" onerror="this.src='${post.preview_url || post.file_url}'">
+                <div class="media-box" onclick="openModal(${index})">
+                    <img src="${post.sample_url || post.preview_url || post.file_url}" loading="lazy">
                     ${isVideo ? '<div class="video-indicator">VIDEO</div>' : ''}
                 </div>
-                <button class="fav-btn ${isFaved ? 'active' : ''}">❤</button>
+                <button class="fav-btn ${isFaved ? 'active' : ''}">
+                    <span class="material-icons md-18">favorite</span>
+                </button>
             `;
-            card.querySelector('.fav-btn').onclick = (e) => { e.stopPropagation(); toggleFav(post, e.target); };
+            
+            card.querySelector('.fav-btn').onclick = (e) => {
+                e.stopPropagation();
+                toggleFav(post, e.target.closest('.fav-btn'));
+            };
+            
             gallery.appendChild(card);
         });
-        if (!isFavMode) updatePaginationButtons();
     }
 
-    function playVideo(container, url) {
-        let video = container.querySelector('video');
-        if (!video) {
-            video = document.createElement('video');
-            video.src = url; video.muted = video.loop = true; video.preload = "auto";
-            container.appendChild(video);
-            videoQueue.push(container);
-            if (videoQueue.length > 10) {
-                const old = videoQueue.shift();
-                const oldV = old.querySelector('video');
-                if (oldV) { oldV.pause(); oldV.src = ""; oldV.remove(); old.querySelector('img').style.display = "block"; }
-            }
-        }
-        video.style.display = "block";
-        container.querySelector('img').style.display = "none";
-        video.play().catch(()=>{});
-    }
-
-    function stopVideo(container) {
-        const video = container.querySelector('video');
-        if (video) { video.pause(); video.style.display = "none"; container.querySelector('img').style.display = "block"; }
-    }
-
-    function openModal(url, isVideo, index = -1) {
-        currentModalIndex = index;
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = isVideo 
-            ? `<video src="${url}" controls autoplay loop></video>`
-            : `<img src="${url}" onerror="this.src='${url.replace('sample', 'preview')}'; this.onerror=null;">`;
-        document.getElementById('modal').style.display = 'flex';
-        document.getElementById('modal-tags').style.display = 'none';
-        document.getElementById('modal-tags').innerHTML = '';
-        const actionsBar = document.querySelector('.modal-actions');
-        actionsBar.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-        document.getElementById('modal-body').innerHTML = '';
-        document.getElementById('modal-tags').style.display = 'none';
-        document.getElementById('modal-tags').innerHTML = '';
-        const actionsBar = document.querySelector('.modal-actions');
-        if (actionsBar) actionsBar.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    function toggleFav(post, btn) {
-        const index = favorites.findIndex(f => f.id === post.id);
-        if (index > -1) { 
-            favorites.splice(index, 1); 
-            btn.classList.remove('active'); 
-        }
-        else { 
-            favorites.push(post); 
-            btn.classList.add('active'); 
-        }
-        localStorage.setItem('rule34_favs', JSON.stringify(favorites));
-        updateHeader();
-        if (isFavMode) {
-            currentGalleryData = favorites; // お気に入りデータを更新
-            renderGallery(favorites);
-        }
-    }
-
-    function toggleFavMode() {
-        isFavMode = !isFavMode;
-        const btn = document.getElementById('favShowBtn');
-        const nav = document.getElementById('bottomNav');
-        if (isFavMode) {
-            btn.style.background = 'var(--fav)'; btn.style.color = 'white'; nav.style.display = 'none';
-            currentGalleryData = favorites; // お気に入りデータを設定
-            renderGallery(favorites);
-        } else {
-            btn.style.background = 'var(--card)'; btn.style.color = 'var(--accent)'; nav.style.display = 'flex';
-            performSearch(0);
-        }
-    }
-
-    function changePage(d) { 
-        closeModal();
-        const newPage = currentPage + d;
-        // 前のページへ: 0未満にならないようにする
-        if (newPage < 0) return;
-        // 次のページへ: 結果がない場合は進まない
-        if (d > 0 && !hasMoreResults) return;
+    function updatePagination() {
+        document.getElementById('prevBtn').disabled = currentPage === 0;
+        document.getElementById('nextBtn').disabled = !hasMoreResults;
         
-        currentPage = newPage;
-        updateHeader();
-        performSearch(currentPage); 
-    }
-    
-    // タグ履歴を表示
-    function renderTagHistory() {
-        const historyDiv = document.getElementById('tagHistory');
-        if (tagHistory.length === 0) {
-            historyDiv.innerHTML = '';
-            return;
-        }
-        historyDiv.innerHTML = '<small style="color:#8b949e">最近使ったタグ: </small>' + 
-            tagHistory.map(tag => `<span class="tag-history-item" onclick="addTag('${tag}')">${tag}</span>`).join('');
-    }
-    
-    // ヘッダー情報を更新
-    function updateHeader() {
-        const favCountEl = document.getElementById('favCount');
-        const pageDisplayEl = document.getElementById('currentPageDisplay');
-        if (favCountEl) favCountEl.textContent = favorites.length;
-        if (pageDisplayEl) pageDisplayEl.textContent = currentPage + 1;
-    }
-    
-    // グリッドサイズ変更
-    window.changeGridSize = (size) => {
-        gallery.className = 'grid';
-        if (size !== 'medium') gallery.classList.add(size);
-        localStorage.setItem('grid_size', size);
-    };
-    
-    // 全タグクリア
-    window.clearAllTags = () => {
-        activeTags = [];
-        document.querySelectorAll('.tag-chip').forEach(el => el.remove());
-    };
-    
-    // お気に入りエクスポート
-    window.exportFavorites = () => {
-        const dataStr = JSON.stringify(favorites, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rule34_favorites_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert(`${favorites.length}件のお気に入りをエクスポートしました`);
-    };
-    
-    // お気に入りインポート
-    window.importFavorites = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const imported = JSON.parse(e.target.result);
-                if (Array.isArray(imported)) {
-                    const before = favorites.length;
-                    imported.forEach(item => {
-                        if (!favorites.some(f => f.id === item.id)) {
-                            favorites.push(item);
-                        }
-                    });
-                    localStorage.setItem('rule34_favs', JSON.stringify(favorites));
-                    alert(`${favorites.length - before}件の新しいお気に入りをインポートしました`);
-                    if (isFavMode) renderGallery(favorites);
-                }
-            } catch (err) {
-                alert('ファイルの読み込みに失敗しました: ' + err.message);
-            }
-        };
-        reader.readAsText(file);
-        event.target.value = '';
-    };
-    
-    // 現在のメディアをダウンロード
-    window.downloadCurrentMedia = () => {
-        if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
-        const post = currentGalleryData[currentModalIndex];
-        const url = post.file_url;
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = url.split('/').pop();
-        a.target = '_blank';
-        a.click();
-    };
-    
-    // モーダル内ナビゲーション
-    window.navigateModal = (direction) => {
-        if (!currentGalleryData || currentGalleryData.length === 0) return;
-        currentModalIndex += direction;
-        if (currentModalIndex < 0) currentModalIndex = currentGalleryData.length - 1;
-        if (currentModalIndex >= currentGalleryData.length) currentModalIndex = 0;
-        const post = currentGalleryData[currentModalIndex];
-        if (!post) return;
-        const isVideo = post.file_url && post.file_url.match(/\.(mp4|webm)$/i);
-        openModal(post.file_url, !!isVideo, currentModalIndex);
-    };
-    
-    // モーダルタグ表示切り替え
-    window.toggleModalTags = () => {
-        const tagsDiv = document.getElementById('modal-tags');
-        if (tagsDiv.style.display === 'none' || !tagsDiv.style.display) {
-            if (currentModalIndex >= 0 && currentGalleryData[currentModalIndex]) {
-                const post = currentGalleryData[currentModalIndex];
-                const tags = post.tags ? post.tags.split(' ') : [];
-                tagsDiv.innerHTML = tags.map(tag => 
-                    `<span class="tag-item" onclick="addTag('${tag}'); closeModal(); performSearch(0);">${tag}</span>`
-                ).join('');
-                tagsDiv.style.display = 'block';
-            }
-        } else {
-            tagsDiv.style.display = 'none';
-        }
-    };
-    
-    // ページボタンを生成
-    function renderPageButtons() {
-        const container = document.getElementById('pageButtons');
-        if (!container) return;
-        container.innerHTML = '';
+        const pageButtons = document.getElementById('pageButtons');
+        pageButtons.innerHTML = '';
         
-        // 現在のページを中心に前後2ページずつ表示（合計5ページ）
         const start = Math.max(0, currentPage - 2);
         const end = start + 4;
         
         for (let i = start; i <= end; i++) {
             const btn = document.createElement('button');
             btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-            btn.textContent = i + 1; // 表示は1から始める
+            btn.textContent = i + 1;
             btn.onclick = () => performSearch(i);
-            container.appendChild(btn);
+            pageButtons.appendChild(btn);
         }
     }
-    
-    // ページネーションボタンの状態を更新
-    function updatePaginationButtons() {
-        const prevBtn = document.querySelector('.pagination button:first-child');
-        const nextBtn = document.querySelector('.pagination button:last-child');
-        
-        if (prevBtn) {
-            prevBtn.disabled = currentPage === 0;
-            prevBtn.style.opacity = currentPage === 0 ? '0.5' : '1';
-            prevBtn.style.cursor = currentPage === 0 ? 'not-allowed' : 'pointer';
-        }
-        
-        if (nextBtn) {
-            nextBtn.disabled = !hasMoreResults;
-            nextBtn.style.opacity = !hasMoreResults ? '0.5' : '1';
-            nextBtn.style.cursor = !hasMoreResults ? 'not-allowed' : 'pointer';
-        }
-        
-        renderPageButtons();
+
+    function changePage(delta) {
+        const newPage = currentPage + delta;
+        if (newPage < 0) return;
+        if (delta > 0 && !hasMoreResults) return;
+        performSearch(newPage);
     }
-    
-    // トップにスクロール
-    window.scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    
-    // スクロール時のトップボタン表示
-    window.addEventListener('scroll', () => {
-        const btn = document.getElementById('scrollTopBtn');
-        if (window.scrollY > 300) {
-            btn.style.display = 'block';
+
+    function goToPage(page) {
+        performSearch(parseInt(page) - 1);
+    }
+
+    function toggleFav(post, btn) {
+        const index = favorites.findIndex(f => f.id === post.id);
+        if (index > -1) {
+            favorites.splice(index, 1);
+            btn.classList.remove('active');
         } else {
-            btn.style.display = 'none';
+            favorites.push(post);
+            btn.classList.add('active');
         }
-    });
-    
-    // キーボードショートカット
-    document.addEventListener('keydown', (e) => {
-        // モーダルが開いている場合
-        if (document.getElementById('modal').style.display === 'flex') {
-            if (e.key === 'Escape') {
-                closeModal();
-            } else if (e.key === 'ArrowLeft') {
-                navigateModal(-1);
-            } else if (e.key === 'ArrowRight') {
-                navigateModal(1);
-            }
+        localStorage.setItem('rule34_favs', JSON.stringify(favorites));
+        if (isFavMode) {
+            currentGalleryData = favorites;
+            renderGallery();
+        }
+    }
+
+    function toggleFavMode() {
+        isFavMode = !isFavMode;
+        const btn = document.getElementById('favBtn');
+        
+        if (isFavMode) {
+            btn.classList.add('active');
+            btn.querySelector('.material-icons').textContent = 'favorite';
+            document.getElementById('pagination').style.display = 'none';
+            currentGalleryData = favorites;
+            renderGallery();
+            status.innerHTML = favorites.length === 0 ? 'お気に入りがありません' : '';
+        } else {
+            btn.classList.remove('active');
+            btn.querySelector('.material-icons').textContent = 'favorite_border';
+            document.getElementById('pagination').style.display = 'flex';
+            performSearch(0);
+        }
+    }
+
+    function openModal(index) {
+        if (!currentGalleryData[index]) return;
+        currentModalIndex = index;
+        const post = currentGalleryData[index];
+        const isVideo = post.file_url && post.file_url.match(/\.(mp4|webm)$/i);
+        
+        modalBody.innerHTML = isVideo 
+            ? `<video src="${post.file_url}" controls autoplay loop></video>`
+            : `<img src="${post.file_url}">`;
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const video = modalBody.querySelector('video');
+        if (video) { video.pause(); video.src = ''; }
+        modalBody.innerHTML = '';
+        modal.classList.remove('show');
+        modalTags.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+
+    function navigateModal(delta) {
+        if (!currentGalleryData.length) return;
+        currentModalIndex += delta;
+        if (currentModalIndex < 0) currentModalIndex = currentGalleryData.length - 1;
+        if (currentModalIndex >= currentGalleryData.length) currentModalIndex = 0;
+        openModal(currentModalIndex);
+    }
+
+    function downloadMedia() {
+        if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
+        const post = currentGalleryData[currentModalIndex];
+        const a = document.createElement('a');
+        a.href = post.file_url;
+        a.download = post.file_url.split('/').pop();
+        a.target = '_blank';
+        a.click();
+    }
+
+    function toggleModalTags() {
+        if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
+        
+        if (modalTags.classList.contains('show')) {
+            modalTags.classList.remove('show');
             return;
         }
         
-        // 通常時
-        if (e.target === tagInput) return; // 入力中は無効
+        const post = currentGalleryData[currentModalIndex];
+        const tags = post.tags ? post.tags.split(' ') : [];
         
-        if (e.key === 'ArrowLeft') {
-            changePage(-1);
-        } else if (e.key === 'ArrowRight') {
-            changePage(1);
-        }
-    });
-    
-    tagInput.onkeydown = (e) => { if(e.key === 'Enter') { currentPage = 0; performSearch(0); } };
-    document.getElementById('searchBtn').onclick = () => { currentPage = 0; performSearch(0); };
-    document.addEventListener('click', (e) => { if (e.target !== tagInput) autoList.style.display = 'none'; });
-    
-    // ページ読み込み時に自動的に検索を実行
-    window.addEventListener('DOMContentLoaded', () => {
-        renderTagHistory();
-        updateHeader();
-        const savedSize = localStorage.getItem('grid_size');
-        if (savedSize) changeGridSize(savedSize);
-        performSearch(0);
-    });
+        modalTags.innerHTML = '';
+        tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'modal-tag';
+            span.textContent = tag;
+            span.onclick = () => {
+                addTag(tag);
+                closeModal();
+            };
+            modalTags.appendChild(span);
+        });
+        
+        modalTags.classList.add('show');
+    }
 </script>
 </body>
 </html>
