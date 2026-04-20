@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="referrer" content="no-referrer"/>
     <title>Rule34 Search</title>
-    
-    <!-- Google Fonts & Material Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
     <style>
         :root { 
             --bg: #202124;
@@ -24,33 +21,17 @@
             --hover: #3c4043;
             --fav: #f28b82;
         }
-        
-        * { 
-            box-sizing: border-box; 
-            margin: 0;
-            padding: 0;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
             color: var(--text); 
             overflow-y: scroll;
         }
-        
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            display: inline-block;
-            user-select: none;
-        }
-        
+        .material-icons { font-family: 'Material Icons'; font-weight: normal; font-style: normal; font-size: 24px; display: inline-block; user-select: none; }
         .material-icons.md-18 { font-size: 18px; }
         .material-icons.md-20 { font-size: 20px; }
-        
-        /* ヘッダー */
+
         .header {
             background: var(--card);
             border-bottom: 1px solid var(--border);
@@ -58,7 +39,6 @@
             top: 0;
             z-index: 100;
         }
-        
         .header-content {
             max-width: 100%;
             margin: 0 auto;
@@ -67,534 +47,129 @@
             align-items: center;
             gap: 16px;
         }
-        
-        .header-brand {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .header-brand .accent {
-            color: var(--accent);
-        }
-        
-        .header-search {
-            flex: 1;
-            max-width: 692px;
-            position: relative;
-        }
-        
+        .header-brand { font-size: 22px; font-weight: 700; color: var(--text); cursor: pointer; flex-shrink: 0; }
+        .header-brand .accent { color: var(--accent); }
+        .header-search { flex: 1; max-width: 692px; position: relative; }
         .header-search-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 16px;
-            height: 44px;
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 16px; height: 44px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 24px;
             transition: all 0.2s;
         }
-        
-        .header-search-box:hover {
+        .header-search-box:hover, .header-search-box:focus-within {
             background: var(--card);
             box-shadow: 0 1px 6px rgba(0,0,0,0.3);
         }
-        
-        .header-search-box:focus-within {
-            background: var(--card);
-            box-shadow: 0 1px 6px rgba(0,0,0,0.3);
-        }
-        
-        .header-search-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: var(--text);
-            outline: none;
-            font-size: 16px;
-        }
-        
-        .header-search-box input::placeholder {
-            color: var(--text-secondary);
-        }
-        
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        
-        .icon-btn:hover {
-            background: var(--hover);
-        }
-        
-        .icon-btn.active .material-icons {
-            color: var(--fav);
-        }
-        
-        /* オートコンプリート */
-        .autocomplete {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            right: 0;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-            display: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            z-index: 2000;
-        }
-        
-        .autocomplete.show {
-            display: block;
-        }
-        
-        .autocomplete-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background 0.2s;
-        }
-        
-        .autocomplete-item:hover {
-            background: var(--hover);
-        }
-        
-        .autocomplete-text {
-            flex: 1;
-            font-size: 14px;
-        }
-        
-        .autocomplete-count {
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-        
-        /* フィルターバー */
-        .filter-bar {
-            display: flex;
-            gap: 0;
-            padding: 0 24px;
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-        }
-        
-        .filter-bar::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .filter-chip {
-            padding: 12px 16px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .filter-chip:hover {
-            background: var(--hover);
-            color: var(--text);
-        }
-        
-        .filter-chip.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-        
-        .filter-chip .material-icons {
-            font-size: 18px;
-        }
-        
-        /* タグ表示 */
-        #activeTagsDisplay {
-            padding: 12px 24px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .tag-badge {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            font-size: 13px;
-        }
-        
-        .tag-badge .material-icons {
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        /* コンテンツエリア */
-        .content-area {
-            padding: 16px 24px;
-        }
-        
-        #status {
-            text-align: center;
-            margin: 20px 0;
-            color: var(--text-secondary);
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* ギャラリー */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
-        }
-        
-        .card {
-            background: var(--card);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            height: 320px;
-            position: relative;
-            transition: all 0.2s;
-        }
-        
-        .card:hover {
-            border-color: var(--accent);
-        }
-        
-        .media-box {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            cursor: zoom-in;
-            overflow: hidden;
-        }
-        
-        .media-box img,
-        .media-box video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .fav-btn {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            width: 36px;
-            height: 36px;
-            background: rgba(0, 0, 0, 0.7);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            transition: all 0.2s;
-        }
-        
-        .fav-btn:hover {
-            background: rgba(0, 0, 0, 0.9);
-        }
-        
-        .fav-btn.active {
-            color: var(--fav);
-        }
-        
-        .video-indicator {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            color: white;
-        }
-        
-        /* モーダル */
-        #modal {
-            display: none;
+        .header-search-box input { flex: 1; border: none; background: transparent; color: var(--text); outline: none; font-size: 16px; }
+        .header-search-box input::placeholder { color: var(--text-secondary); }
+        .icon-btn { width: 40px; height: 40px; border: none; background: transparent; color: var(--text-secondary); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .icon-btn:hover { background: var(--hover); }
+        .icon-btn.active .material-icons { color: var(--fav); }
+
+        /* コピーボタン通知 */
+        .copy-toast {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(32, 33, 36, 0.95);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #modal.show {
-            display: flex;
-        }
-        
-        #modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            z-index: 10;
-        }
-        
-        .modal-nav {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-        }
-        
-        .modal-nav.left {
-            left: 16px;
-        }
-        
-        .modal-nav.right {
-            right: 16px;
-        }
-        
-        #modal-content {
-            max-width: 90%;
-            max-height: calc(100vh - 180px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #modal-body img,
-        #modal-body video {
-            max-width: 100%;
-            max-height: calc(100vh - 180px);
-            object-fit: contain;
-        }
-        
-        .modal-actions {
-            position: fixed;
-            bottom: 24px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
             background: var(--card);
-            padding: 12px 16px;
-            border-radius: 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-        
-        .modal-btn {
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-        
-        .modal-btn:hover {
-            background: var(--hover);
-        }
-        
-        #modal-tags {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 80%;
-            max-height: 40vh;
-            overflow-y: auto;
-            background: var(--card);
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            display: none;
-        }
-        
-        #modal-tags.show {
-            display: block;
-        }
-        
-        .modal-tag {
-            display: inline-block;
-            margin: 4px;
-            padding: 6px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .modal-tag:hover {
-            background: var(--hover);
-            border-color: var(--accent);
-        }
-        
-        /* ページネーション */
-        .pagination {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-            margin: 40px 0;
-            flex-wrap: wrap;
-        }
-        
-        .pagination button {
+            border-radius: 20px;
             padding: 10px 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .pagination button:hover:not(:disabled) {
-            background: var(--hover);
-            border-color: var(--accent);
-        }
-        
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .page-num {
-            width: 60px;
-            text-align: center;
-            padding: 10px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text);
-            font-size: 14px;
-        }
-        
-        #pageButtons {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .page-btn {
-            min-width: 36px;
-            padding: 8px 12px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            color: var(--text);
             font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
-        
-        .page-btn:hover {
-            background: var(--hover);
+        .copy-toast.show { opacity: 1; }
+
+        .autocomplete {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+            max-height: 400px; overflow-y: auto; display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 2000;
         }
-        
-        .page-btn.active {
-            background: var(--accent);
-            color: var(--bg);
-            border-color: var(--accent);
+        .autocomplete.show { display: block; }
+        .autocomplete-item { padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s; }
+        .autocomplete-item:hover { background: var(--hover); }
+        .autocomplete-text { flex: 1; font-size: 14px; }
+        .autocomplete-count { color: var(--text-secondary); font-size: 12px; }
+
+        .filter-bar { display: flex; gap: 0; padding: 0 24px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-chip {
+            padding: 12px 16px; background: transparent; border: none;
+            border-bottom: 2px solid transparent; color: var(--text-secondary);
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
         }
-        
-        /* レスポンシブ */
+        .filter-chip:hover { background: var(--hover); color: var(--text); }
+        .filter-chip.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .filter-chip .material-icons { font-size: 18px; }
+
+        #activeTagsDisplay { padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag-badge { display: flex; align-items: center; gap: 4px; padding: 4px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; font-size: 13px; }
+        .tag-badge .material-icons { font-size: 16px; cursor: pointer; }
+
+        .content-area { padding: 16px 24px; }
+        #status { text-align: center; margin: 20px 0; color: var(--text-secondary); }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; height: 320px; position: relative; transition: all 0.2s; }
+        .card:hover { border-color: var(--accent); }
+        .media-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg); cursor: zoom-in; overflow: hidden; }
+        .media-box img, .media-box video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .fav-btn { position: absolute; bottom: 8px; left: 8px; width: 36px; height: 36px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s; }
+        .fav-btn:hover { background: rgba(0,0,0,0.9); }
+        .fav-btn.active { color: var(--fav); }
+        .video-indicator { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; color: white; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 3000; justify-content: center; align-items: center; }
+        #modal.show { display: flex; }
+        #modal-close { position: absolute; top: 16px; right: 16px; z-index: 10; }
+        .modal-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 10; }
+        .modal-nav.left { left: 16px; }
+        .modal-nav.right { right: 16px; }
+        #modal-content { max-width: 90%; max-height: calc(100vh - 180px); display: flex; align-items: center; justify-content: center; }
+        #modal-body img, #modal-body video { max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; }
+        .modal-actions { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; background: var(--card); padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .modal-btn { padding: 8px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .modal-btn:hover { background: var(--hover); }
+        #modal-tags { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); max-width: 80%; max-height: 40vh; overflow-y: auto; background: var(--card); padding: 16px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: none; }
+        #modal-tags.show { display: block; }
+        .modal-tag { display: inline-block; margin: 4px; padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+        .modal-tag:hover { background: var(--hover); border-color: var(--accent); }
+
+        .pagination { display: flex; gap: 12px; justify-content: center; align-items: center; margin: 40px 0; flex-wrap: wrap; }
+        .pagination button { padding: 10px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .pagination button:hover:not(:disabled) { background: var(--hover); border-color: var(--accent); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-num { width: 60px; text-align: center; padding: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 14px; }
+        #pageButtons { display: flex; gap: 4px; }
+        .page-btn { min-width: 36px; padding: 8px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+        .page-btn:hover { background: var(--hover); }
+        .page-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+        .page-info { font-size: 13px; color: var(--text-secondary); padding: 0 8px; }
+
         @media (max-width: 768px) {
-            .header-content {
-                padding: 8px 16px;
-                gap: 12px;
-            }
-            
-            .header-brand {
-                font-size: 18px;
-            }
-            
-            .filter-bar {
-                padding: 0 16px;
-            }
-            
-            .content-area {
-                padding: 12px 16px;
-            }
-            
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 12px;
-            }
-            
-            .card {
-                height: 280px;
-            }
+            .header-content { padding: 8px 16px; gap: 12px; }
+            .header-brand { font-size: 18px; }
+            .filter-bar { padding: 0 16px; }
+            .content-area { padding: 12px 16px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+            .card { height: 280px; }
         }
-        
         @media (max-width: 480px) {
-            .header-brand {
-                display: none;
-            }
-            
-            .filter-chip span:not(.material-icons) {
-                display: none;
-            }
-            
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-            
-            .card {
-                height: 240px;
-            }
+            .header-brand { display: none; }
+            .filter-chip span:not(.material-icons) { display: none; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .card { height: 240px; }
         }
     </style>
 </head>
@@ -602,10 +177,9 @@
 
 <header class="header">
     <div class="header-content">
-        <div class="header-brand" onclick="location.reload()">
+        <div class="header-brand" onclick="location.href = location.pathname">
             Rule<span class="accent">34</span>
         </div>
-        
         <div class="header-search">
             <div class="header-search-box">
                 <span class="material-icons md-20" style="color: var(--text-secondary);">search</span>
@@ -614,12 +188,12 @@
             </div>
             <div class="autocomplete" id="autocomplete"></div>
         </div>
-        
-        <div>
-            <button class="icon-btn" id="favBtn" onclick="toggleFavMode()">
-                <span class="material-icons">favorite_border</span>
-            </button>
-        </div>
+        <button class="icon-btn" title="URLをコピー" onclick="copyCurrentUrl()">
+            <span class="material-icons">link</span>
+        </button>
+        <button class="icon-btn" id="favBtn" onclick="toggleFavMode()">
+            <span class="material-icons">favorite_border</span>
+        </button>
     </div>
 </header>
 
@@ -647,14 +221,16 @@
 <div class="content-area">
     <div id="status"></div>
     <div id="gallery" class="grid"></div>
-    
     <div class="pagination" id="pagination">
         <button onclick="changePage(-1)" id="prevBtn">前のページ</button>
         <input type="number" class="page-num" id="pageInput" value="1" min="1" onchange="goToPage(this.value)">
         <div id="pageButtons"></div>
+        <span class="page-info" id="pageInfo"></span>
         <button onclick="changePage(1)" id="nextBtn">次のページ</button>
     </div>
 </div>
+
+<div class="copy-toast" id="copyToast">URLをコピーしました</div>
 
 <div id="modal" onclick="closeModal()">
     <button class="icon-btn" id="modal-close" onclick="closeModal()">
@@ -685,6 +261,7 @@
 <script>
     const USER_ID = '5908339';
     const API_KEY = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
+    const PER_PAGE = 40;
 
     let activeTags = [];
     let currentPage = 0;
@@ -694,8 +271,8 @@
     let favorites = JSON.parse(localStorage.getItem('rule34_favs') || '[]');
     let currentGalleryData = [];
     let currentModalIndex = -1;
-    let hasMoreResults = true;
-    let videoQueue = [];
+    let totalCount = 0;
+    let maxPage = 0;
     let timeoutId;
 
     const searchInput = document.getElementById('searchInput');
@@ -709,22 +286,80 @@
     const modalBody = document.getElementById('modal-body');
     const modalTags = document.getElementById('modal-tags');
 
-    // 初期化
+    // ── URL状態管理 ──────────────────────────────────────────
+    function pushState() {
+        const params = new URLSearchParams();
+        if (activeTags.length > 0) params.set('tags', activeTags.join(','));
+        if (currentPage > 0) params.set('page', currentPage);
+        if (currentSort) params.set('sort', currentSort);
+        if (!aiFilterEnabled) params.set('ai', '0');
+        const newUrl = params.toString() ? `${location.pathname}?${params}` : location.pathname;
+        history.pushState({ activeTags, currentPage, currentSort, aiFilterEnabled }, '', newUrl);
+    }
+
+    function loadFromUrl() {
+        const params = new URLSearchParams(location.search);
+        if (params.has('tags')) {
+            activeTags = params.get('tags').split(',').filter(Boolean);
+        }
+        currentPage = parseInt(params.get('page') || '0');
+        currentSort = params.get('sort') || '';
+        aiFilterEnabled = params.get('ai') !== '0';
+
+        // フィルターUIを同期
+        document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+            const f = chip.getAttribute('data-filter');
+            if (f === 'ai') {
+                chip.classList.toggle('active', aiFilterEnabled);
+            } else if (f === 'all' && !currentSort) {
+                chip.classList.add('active');
+            } else if (f === currentSort) {
+                chip.classList.add('active');
+            } else if (f !== 'ai') {
+                chip.classList.remove('active');
+            }
+        });
+
+        renderTags();
+    }
+
+    window.addEventListener('popstate', (e) => {
+        if (e.state) {
+            activeTags = e.state.activeTags || [];
+            currentPage = e.state.currentPage || 0;
+            currentSort = e.state.currentSort || '';
+            aiFilterEnabled = e.state.aiFilterEnabled !== false;
+            renderTags();
+            document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+                const f = chip.getAttribute('data-filter');
+                if (f === 'ai') chip.classList.toggle('active', aiFilterEnabled);
+                else if (f === 'all' && !currentSort) chip.classList.add('active');
+                else if (f === currentSort) chip.classList.add('active');
+                else if (f !== 'ai') chip.classList.remove('active');
+            });
+        }
+        performSearch(currentPage, false);
+    });
+
+    // ── URL コピー ──────────────────────────────────────────
+    function copyCurrentUrl() {
+        navigator.clipboard.writeText(location.href).then(() => {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        });
+    }
+
+    // ── 初期化 ──────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
-        performSearch(0);
-        
-        // 検索入力
+        loadFromUrl();
+        performSearch(currentPage, false);
+
         searchInput.addEventListener('input', () => {
             clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
-            
             clearTimeout(timeoutId);
             const query = searchInput.value.trim();
-            
-            if (query.length < 2) {
-                autocomplete.classList.remove('show');
-                return;
-            }
-            
+            if (query.length < 2) { autocomplete.classList.remove('show'); return; }
             timeoutId = setTimeout(async () => {
                 const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + query)}`;
                 try {
@@ -735,11 +370,7 @@
                         data.slice(0, 8).forEach(item => {
                             const div = document.createElement('div');
                             div.className = 'autocomplete-item';
-                            div.innerHTML = `
-                                <span class="material-icons md-20">search</span>
-                                <span class="autocomplete-text">${item.value}</span>
-                                <span class="autocomplete-count">${item.label}</span>
-                            `;
+                            div.innerHTML = `<span class="material-icons md-20">search</span><span class="autocomplete-text">${item.value}</span><span class="autocomplete-count">${item.label}</span>`;
                             div.onclick = () => {
                                 addTag(item.value);
                                 searchInput.value = '';
@@ -750,12 +381,10 @@
                         });
                         autocomplete.classList.add('show');
                     }
-                } catch (e) {
-                    console.error(e);
-                }
+                } catch (e) { console.error(e); }
             }, 150);
         });
-        
+
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && searchInput.value.trim()) {
                 addTag(searchInput.value.trim());
@@ -764,25 +393,32 @@
                 autocomplete.classList.remove('show');
             }
         });
-        
+
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
             clearBtn.style.display = 'none';
             autocomplete.classList.remove('show');
             searchInput.focus();
         });
-        
+
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.header-search')) {
-                autocomplete.classList.remove('show');
+            if (!e.target.closest('.header-search')) autocomplete.classList.remove('show');
+        });
+
+        // キーボードショートカット
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement === searchInput) return;
+            if (modal.classList.contains('show')) {
+                if (e.key === 'ArrowLeft')  navigateModal(-1);
+                if (e.key === 'ArrowRight') navigateModal(1);
+                if (e.key === 'Escape') closeModal();
             }
         });
-        
+
         // フィルター
         document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
             chip.addEventListener('click', () => {
                 const filter = chip.getAttribute('data-filter');
-                
                 if (filter === 'ai') {
                     aiFilterEnabled = !aiFilterEnabled;
                     chip.classList.toggle('active');
@@ -804,6 +440,7 @@
         });
     });
 
+    // ── タグ管理 ─────────────────────────────────────────────
     function addTag(tag) {
         tag = tag.trim().toLowerCase();
         if (!tag || activeTags.includes(tag)) return;
@@ -819,69 +456,102 @@
     }
 
     function renderTags() {
-        if (activeTags.length === 0) {
-            activeTagsDisplay.innerHTML = '';
-            return;
-        }
-        
+        if (activeTags.length === 0) { activeTagsDisplay.innerHTML = ''; return; }
         activeTagsDisplay.innerHTML = '';
         activeTags.forEach(tag => {
             const badge = document.createElement('div');
             badge.className = 'tag-badge';
-            badge.innerHTML = `
-                <span>${tag}</span>
-                <span class="material-icons md-18" onclick="removeTag('${tag}')">close</span>
-            `;
+            badge.innerHTML = `<span>${tag}</span><span class="material-icons md-18" onclick="removeTag('${tag}')">close</span>`;
             activeTagsDisplay.appendChild(badge);
         });
     }
 
-    async function performSearch(page) {
+    // ── 検索 & 総数取得 ────────────────────────────────────────
+    function buildQueryArray() {
+        const q = [...activeTags];
+        if (aiFilterEnabled) q.push('-ai_generated');
+        if (currentSort) q.push(currentSort);
+        return q;
+    }
+
+    async function fetchCount(queryStr) {
+        // limit=0 で件数のみ取得
+        const url = `https://corsproxy.io/?${encodeURIComponent(
+            `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=0&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`
+        )}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            // APIは @attributes.count を返す場合がある
+            if (data && data['@attributes'] && data['@attributes'].count !== undefined) {
+                return parseInt(data['@attributes'].count);
+            }
+            // 配列で返ってきた場合は今のページ分だけ
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function performSearch(page, doPush = true) {
         if (isFavMode) {
             isFavMode = false;
             document.getElementById('favBtn').classList.remove('active');
             document.getElementById('pagination').style.display = 'flex';
         }
-        
+
         currentPage = parseInt(page);
         pageInput.value = currentPage + 1;
-        
+
         gallery.innerHTML = '';
         status.innerHTML = '<span class="spinner"></span> 読み込み中...';
-        
-        let queryArray = [...activeTags];
-        if (aiFilterEnabled) queryArray.push('-ai_generated');
-        if (currentSort) queryArray.push(currentSort);
-        
-        const queryStr = queryArray.join(' ');
-        const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
-        
+
+        const queryStr = buildQueryArray().join(' ');
+
+        // 件数取得と投稿取得を並行
+        const postsUrl = `https://corsproxy.io/?${encodeURIComponent(
+            `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=${PER_PAGE}&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`
+        )}`;
+
         try {
-            const res = await fetch(url);
-            const data = await res.json();
+            const [postsRes, count] = await Promise.all([
+                fetch(postsUrl),
+                fetchCount(queryStr)
+            ]);
+            const data = await postsRes.json();
             currentGalleryData = data || [];
-            hasMoreResults = currentGalleryData.length >= 40;
+
+            if (count !== null) {
+                totalCount = count;
+                maxPage = Math.max(0, Math.ceil(totalCount / PER_PAGE) - 1);
+            } else {
+                // フォールバック：現ページ件数で判断
+                totalCount = null;
+                maxPage = currentGalleryData.length >= PER_PAGE ? currentPage + 999 : currentPage;
+            }
+
             renderGallery();
             updatePagination();
             status.innerHTML = '';
             window.scrollTo(0, 0);
+
+            if (doPush) pushState();
         } catch (e) {
             status.innerHTML = '⚠️ エラーが発生しました';
             console.error(e);
         }
     }
 
+    // ── ギャラリー描画 ────────────────────────────────────────
     function renderGallery() {
         gallery.innerHTML = '';
         if (!currentGalleryData || currentGalleryData.length === 0) {
             status.innerHTML = '結果が見つかりませんでした';
             return;
         }
-        
         currentGalleryData.forEach((post, index) => {
             const isVideo = post.file_url && post.file_url.match(/\.(mp4|webm)$/i);
             const isFaved = favorites.some(f => f.id === post.id);
-            
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
@@ -893,26 +563,35 @@
                     <span class="material-icons md-18">favorite</span>
                 </button>
             `;
-            
             card.querySelector('.fav-btn').onclick = (e) => {
                 e.stopPropagation();
                 toggleFav(post, e.target.closest('.fav-btn'));
             };
-            
             gallery.appendChild(card);
         });
     }
 
+    // ── ページネーション ──────────────────────────────────────
     function updatePagination() {
+        const hasMore = currentGalleryData.length >= PER_PAGE && currentPage < maxPage;
         document.getElementById('prevBtn').disabled = currentPage === 0;
-        document.getElementById('nextBtn').disabled = !hasMoreResults;
-        
+        document.getElementById('nextBtn').disabled = !hasMore;
+
+        // ページ情報表示
+        const pageInfoEl = document.getElementById('pageInfo');
+        if (totalCount !== null) {
+            pageInfoEl.textContent = `全 ${totalCount.toLocaleString()} 件 / ${maxPage + 1} ページ`;
+        } else {
+            pageInfoEl.textContent = '';
+        }
+
         const pageButtons = document.getElementById('pageButtons');
         pageButtons.innerHTML = '';
-        
+
+        // 表示するページ番号の範囲（最大ページを超えない）
         const start = Math.max(0, currentPage - 2);
-        const end = start + 4;
-        
+        const end = Math.min(maxPage, start + 4);
+
         for (let i = start; i <= end; i++) {
             const btn = document.createElement('button');
             btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
@@ -925,14 +604,16 @@
     function changePage(delta) {
         const newPage = currentPage + delta;
         if (newPage < 0) return;
-        if (delta > 0 && !hasMoreResults) return;
+        if (delta > 0 && currentPage >= maxPage) return;
         performSearch(newPage);
     }
 
     function goToPage(page) {
-        performSearch(parseInt(page) - 1);
+        const p = Math.max(0, Math.min(parseInt(page) - 1, maxPage));
+        performSearch(p);
     }
 
+    // ── お気に入り ────────────────────────────────────────────
     function toggleFav(post, btn) {
         const index = favorites.findIndex(f => f.id === post.id);
         if (index > -1) {
@@ -943,16 +624,12 @@
             btn.classList.add('active');
         }
         localStorage.setItem('rule34_favs', JSON.stringify(favorites));
-        if (isFavMode) {
-            currentGalleryData = favorites;
-            renderGallery();
-        }
+        if (isFavMode) { currentGalleryData = favorites; renderGallery(); }
     }
 
     function toggleFavMode() {
         isFavMode = !isFavMode;
         const btn = document.getElementById('favBtn');
-        
         if (isFavMode) {
             btn.classList.add('active');
             btn.querySelector('.material-icons').textContent = 'favorite';
@@ -964,20 +641,19 @@
             btn.classList.remove('active');
             btn.querySelector('.material-icons').textContent = 'favorite_border';
             document.getElementById('pagination').style.display = 'flex';
-            performSearch(0);
+            performSearch(currentPage);
         }
     }
 
+    // ── モーダル ──────────────────────────────────────────────
     function openModal(index) {
         if (!currentGalleryData[index]) return;
         currentModalIndex = index;
         const post = currentGalleryData[index];
         const isVideo = post.file_url && post.file_url.match(/\.(mp4|webm)$/i);
-        
-        modalBody.innerHTML = isVideo 
+        modalBody.innerHTML = isVideo
             ? `<video src="${post.file_url}" controls autoplay loop></video>`
             : `<img src="${post.file_url}">`;
-        
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
     }
@@ -993,9 +669,7 @@
 
     function navigateModal(delta) {
         if (!currentGalleryData.length) return;
-        currentModalIndex += delta;
-        if (currentModalIndex < 0) currentModalIndex = currentGalleryData.length - 1;
-        if (currentModalIndex >= currentGalleryData.length) currentModalIndex = 0;
+        currentModalIndex = (currentModalIndex + delta + currentGalleryData.length) % currentGalleryData.length;
         openModal(currentModalIndex);
     }
 
@@ -1011,27 +685,17 @@
 
     function toggleModalTags() {
         if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
-        
-        if (modalTags.classList.contains('show')) {
-            modalTags.classList.remove('show');
-            return;
-        }
-        
+        if (modalTags.classList.contains('show')) { modalTags.classList.remove('show'); return; }
         const post = currentGalleryData[currentModalIndex];
         const tags = post.tags ? post.tags.split(' ') : [];
-        
         modalTags.innerHTML = '';
         tags.forEach(tag => {
             const span = document.createElement('span');
             span.className = 'modal-tag';
             span.textContent = tag;
-            span.onclick = () => {
-                addTag(tag);
-                closeModal();
-            };
+            span.onclick = () => { addTag(tag); closeModal(); };
             modalTags.appendChild(span);
         });
-        
         modalTags.classList.add('show');
     }
 </script>
