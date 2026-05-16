@@ -86,9 +86,10 @@
         .fav-btn.active { color: var(--fav); }
         .video-indicator { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; color: white; }
 
-        /* Image preview tooltip */
-        #preview-tooltip { position: fixed; pointer-events: none; z-index: 5000; display: none; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.7); border: 1px solid var(--border); background: var(--bg); max-width: 320px; max-height: 320px; }
-        #preview-tooltip img { display: block; max-width: 320px; max-height: 320px; object-fit: contain; }
+        /* Video hover preview */
+        .media-box .hover-video { display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--bg); }
+        .card:hover .hover-video { display: block; }
+        .card:hover .thumb-img { display: none; }
 
         /* Modal */
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 3000; justify-content: center; align-items: center; }
@@ -210,9 +211,6 @@
         <button onclick="changePage(1)" id="nextBtn">次のページ</button>
     </div>
 </div>
-
-<!-- Image preview tooltip -->
-<div id="preview-tooltip"><img id="preview-img" src="" alt=""></div>
 
 <!-- Shortcut help -->
 <div id="shortcut-help">
@@ -546,10 +544,26 @@
         if (totalCount === null) return;
         const totalPages = Math.ceil(totalCount / 40);
         document.getElementById('pageInfo').textContent = `/ ${totalPages.toLocaleString()}ページ (${totalCount.toLocaleString()}件)`;
+        // ページボタンを総ページ数確定後に再描画（updatePaginationは呼ばない）
+        renderPageButtons(totalPages);
+    }
+
+    function renderPageButtons(totalPages) {
+        const pageButtons = document.getElementById('pageButtons');
+        pageButtons.innerHTML = '';
+        const lastPage = totalPages !== null ? totalPages - 1 : (hasMoreResults ? currentPage + 10 : currentPage);
+        const start = Math.max(0, currentPage - 2);
+        const end = Math.min(lastPage, start + 4);
+        for (let i = start; i <= end; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i + 1;
+            btn.onclick = () => performSearch(i);
+            pageButtons.appendChild(btn);
+        }
     }
 
     // --- Gallery ---
-    let previewTimer;
     function renderGallery() {
         gallery.innerHTML = '';
         if (!currentGalleryData || currentGalleryData.length === 0) {
@@ -564,73 +578,54 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `
-                <div class="media-box" onclick="openModal(${index})">
-                    <img src="${thumbUrl}" loading="lazy" alt="">
-                    ${isVideo ? '<div class="video-indicator">VIDEO</div>' : ''}
-                </div>
-                <button class="fav-btn ${isFaved ? 'active' : ''}" title="お気に入り">
-                    <span class="material-icons md-18">favorite</span>
-                </button>
-            `;
 
-            card.querySelector('.fav-btn').onclick = (e) => {
-                e.stopPropagation();
-                toggleFav(post, e.target.closest('.fav-btn'));
-            };
+            const mediaBox = document.createElement('div');
+            mediaBox.className = 'media-box';
+            mediaBox.onclick = () => openModal(index);
 
-            // Image preview on hover
-            if (!isVideo) {
-                const mediaBox = card.querySelector('.media-box');
-                mediaBox.addEventListener('mouseenter', (e) => {
-                    previewTimer = setTimeout(() => showPreview(thumbUrl, e), 400);
-                });
-                mediaBox.addEventListener('mousemove', movePreview);
-                mediaBox.addEventListener('mouseleave', hidePreview);
+            const img = document.createElement('img');
+            img.className = 'thumb-img';
+            img.src = thumbUrl;
+            img.loading = 'lazy';
+            img.alt = '';
+            mediaBox.appendChild(img);
+
+            if (isVideo) {
+                const badge = document.createElement('div');
+                badge.className = 'video-indicator';
+                badge.textContent = 'VIDEO';
+                mediaBox.appendChild(badge);
+
+                const vid = document.createElement('video');
+                vid.className = 'hover-video';
+                vid.src = post.file_url;
+                vid.muted = true;
+                vid.loop = true;
+                vid.preload = 'none';
+                mediaBox.appendChild(vid);
+
+                card.addEventListener('mouseenter', () => vid.play().catch(() => {}));
+                card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
             }
 
+            const favBtn = document.createElement('button');
+            favBtn.className = 'fav-btn' + (isFaved ? ' active' : '');
+            favBtn.title = 'お気に入り';
+            favBtn.innerHTML = '<span class="material-icons md-18">favorite</span>';
+            favBtn.onclick = (e) => { e.stopPropagation(); toggleFav(post, favBtn); };
+
+            card.appendChild(mediaBox);
+            card.appendChild(favBtn);
             gallery.appendChild(card);
         });
-    }
-
-    function showPreview(url, e) {
-        previewImg.src = url;
-        previewTooltip.style.display = 'block';
-        movePreview(e);
-    }
-
-    function movePreview(e) {
-        if (previewTooltip.style.display === 'none') return;
-        const x = e.clientX + 16;
-        const y = e.clientY - 160;
-        previewTooltip.style.left = Math.min(x, window.innerWidth - 340) + 'px';
-        previewTooltip.style.top = Math.max(8, y) + 'px';
-    }
-
-    function hidePreview() {
-        clearTimeout(previewTimer);
-        previewTooltip.style.display = 'none';
-        previewImg.src = '';
     }
 
     // --- Pagination ---
     function updatePagination() {
         document.getElementById('prevBtn').disabled = currentPage === 0;
         document.getElementById('nextBtn').disabled = !hasMoreResults;
-
-        const pageButtons = document.getElementById('pageButtons');
-        pageButtons.innerHTML = '';
-        const start = Math.max(0, currentPage - 2);
-        const end = start + 4;
-        for (let i = start; i <= end; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-            btn.textContent = i + 1;
-            btn.onclick = () => performSearch(i);
-            pageButtons.appendChild(btn);
-        }
-
-        updatePageInfo();
+        const totalPages = totalCount !== null ? Math.ceil(totalCount / 40) : null;
+        renderPageButtons(totalPages);
     }
 
     function changePage(delta) {
@@ -723,6 +718,8 @@
         modal.classList.remove('show');
         modalTags.classList.remove('show');
         document.body.style.overflow = 'auto';
+        // モーダル内の動画を停止
+        modalBody.querySelectorAll('video').forEach(v => { v.pause(); v.src = ''; });
     }
 
     function navigateModal(delta) {
