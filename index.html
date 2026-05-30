@@ -38,7 +38,7 @@
         .header-search-box:hover, .header-search-box:focus-within { background: var(--card); box-shadow: 0 1px 6px rgba(0,0,0,0.3); }
         .header-search-box input { flex: 1; border: none; background: transparent; color: var(--text); outline: none; font-size: 16px; }
         .header-search-box input::placeholder { color: var(--text-secondary); }
-        .icon-btn { width: 40px; height: 40px; border: none; background: transparent; color: var(--text-secondary); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+        .icon-btn { width: 40px; height: 40px; border: none; background: transparent; color: var(--text-secondary); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .icon-btn:hover { background: var(--hover); color: var(--text); }
         .icon-btn.active .material-icons { color: var(--fav); }
 
@@ -51,16 +51,15 @@
         .autocomplete-count { color: var(--text-secondary); font-size: 12px; }
 
         /* Filter bar */
-        .filter-bar { display: flex; padding: 0 24px; border-bottom: 1px solid var(--border); overflow-x: auto; align-items: center; }
+        .filter-bar { display: flex; gap: 0; padding: 0 24px; border-bottom: 1px solid var(--border); overflow-x: auto; align-items: center; }
         .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-chip { padding: 12px 16px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .filter-chip { padding: 12px 16px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
         .filter-chip:hover { background: var(--hover); color: var(--text); }
         .filter-chip.active { color: var(--accent); border-bottom-color: var(--accent); }
         .filter-chip .material-icons { font-size: 18px; }
-        .filter-divider { width: 1px; height: 24px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
 
-        /* Grid size */
-        .grid-controls { margin-left: auto; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+        /* Grid size control */
+        .grid-controls { margin-left: auto; display: flex; align-items: center; gap: 4px; padding: 0 8px; }
         .grid-btn { width: 32px; height: 32px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .grid-btn:hover { background: var(--hover); color: var(--text); }
         .grid-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
@@ -68,15 +67,7 @@
         /* Tags display */
         #activeTagsDisplay { padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; min-height: 0; }
         .tag-badge { display: flex; align-items: center; gap: 4px; padding: 4px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; font-size: 13px; }
-        .tag-badge .material-icons { font-size: 16px; cursor: pointer; color: var(--text-secondary); }
-        .tag-badge .material-icons:hover { color: var(--text); }
-
-        /* Quick tags */
-        #quickTags { padding: 0 24px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .quick-tag { padding: 5px 14px; background: transparent; border: 1px solid var(--border); border-radius: 16px; color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .quick-tag:hover { background: var(--hover); color: var(--text); border-color: var(--text-secondary); }
-        .quick-tag.pinned { border-color: var(--accent); color: var(--accent); }
-        .quick-tag-label { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+        .tag-badge .material-icons { font-size: 16px; cursor: pointer; }
 
         /* Content */
         .content-area { padding: 16px 24px; }
@@ -86,42 +77,38 @@
 
         /* Gallery */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr)); gap: 16px; }
-        .card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; height: 320px; position: relative; transition: border-color 0.2s; }
+        .card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; height: 320px; position: relative; transition: all 0.2s; }
         .card:hover { border-color: var(--accent); }
-        .media-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg); cursor: zoom-in; overflow: hidden; position: relative; }
-        .media-box .thumb-img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
-        .media-box .hover-video { display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--bg); }
-        .card:hover .hover-video { display: block; }
-        .card:hover .thumb-img { display: none; }
+        .media-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg); cursor: zoom-in; overflow: hidden; }
+        .media-box img, .media-box video { max-width: 100%; max-height: 100%; object-fit: contain; }
         .fav-btn { position: absolute; bottom: 8px; left: 8px; width: 36px; height: 36px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s; }
         .fav-btn:hover { background: rgba(0,0,0,0.9); }
         .fav-btn.active { color: var(--fav); }
-        .video-indicator { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; color: white; pointer-events: none; }
+        .video-indicator { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; color: white; }
+
+        /* Video hover preview */
+        .media-box .hover-video { display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--bg); }
+        .card:hover .hover-video { display: block; }
+        .card:hover .thumb-img { display: none; }
 
         /* Modal */
-        #modal { display: none; position: fixed; inset: 0; background: rgba(32,33,36,0.95); z-index: 3000; }
-        #modal.show { display: block; }
-        /* 背景クリックで閉じるレイヤー */
-        #modal-backdrop { position: absolute; inset: 0; z-index: 1; cursor: pointer; }
-        /* コントロール類（z-index高め） */
-        #modal-close { position: absolute; top: 16px; right: 16px; z-index: 20; }
-        .modal-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 20; }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 3000; justify-content: center; align-items: center; }
+        #modal.show { display: flex; }
+        #modal-close { position: absolute; top: 16px; right: 16px; z-index: 10; }
+        .modal-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 10; }
         .modal-nav.left { left: 16px; }
         .modal-nav.right { right: 16px; }
-        /* 画像/動画コンテナ（クリック透過しない） */
-        #modal-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
-        #modal-content { max-width: 90%; max-height: calc(100vh - 180px); pointer-events: auto; }
-        #modal-body img, #modal-body video { max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; display: block; }
-        /* アクションバー・タグ（クリック透過しない） */
-        .modal-actions { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; background: var(--card); padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 20; }
+        #modal-content { max-width: 90%; max-height: calc(100vh - 180px); display: flex; align-items: center; justify-content: center; }
+        #modal-body img, #modal-body video { max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; }
+        .modal-actions { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; background: var(--card); padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .modal-btn { padding: 8px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
         .modal-btn:hover { background: var(--hover); }
-        #modal-tags { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); max-width: 80%; max-height: 40vh; overflow-y: auto; background: var(--card); padding: 16px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: none; z-index: 20; }
+        #modal-tags { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); max-width: 80%; max-height: 40vh; overflow-y: auto; background: var(--card); padding: 16px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: none; }
         #modal-tags.show { display: block; }
         .modal-tag { display: inline-block; margin: 4px; padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
         .modal-tag:hover { background: var(--hover); border-color: var(--accent); }
 
-        /* Shortcut help */
+        /* Keyboard shortcut help */
         #shortcut-help { position: fixed; bottom: 24px; right: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 12px; color: var(--text-secondary); display: none; z-index: 4000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); min-width: 220px; }
         #shortcut-help.show { display: block; }
         #shortcut-help h4 { color: var(--text); margin-bottom: 10px; font-size: 13px; }
@@ -133,35 +120,38 @@
         .pagination button { padding: 10px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .pagination button:hover:not(:disabled) { background: var(--hover); border-color: var(--accent); }
         .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .page-num { width: 60px; text-align: center; padding: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 14px; font-family: 'Roboto', sans-serif; }
-        .page-info { color: var(--text-secondary); font-size: 13px; white-space: nowrap; }
+        .page-num { width: 60px; text-align: center; padding: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 14px; }
+        .page-info { color: var(--text-secondary); font-size: 13px; }
         #pageButtons { display: flex; gap: 4px; }
         .page-btn { min-width: 36px; padding: 8px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.2s; }
         .page-btn:hover { background: var(--hover); }
-        .page-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+        .page-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-        /* Toast */
+        /* Toast notification */
         #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 10px 20px; font-size: 13px; opacity: 0; transition: all 0.3s; z-index: 9999; pointer-events: none; white-space: nowrap; }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .header-content { padding: 8px 12px; gap: 8px; }
             .header-brand { font-size: 18px; }
             .filter-bar { padding: 0 12px; }
-            #quickTags { padding: 0 12px 10px; }
-            #activeTagsDisplay { padding: 8px 12px; }
             .content-area { padding: 10px 12px; }
-            .grid { gap: 10px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
             .card { height: 260px; }
+            /* ページネーション: モバイルは前後ボタンとページ番号のみ */
             .pagination { gap: 8px; margin: 24px 0; }
             #pageButtons { display: none; }
             .page-info { display: none; }
             .pagination button { padding: 10px 16px; font-size: 13px; }
+            /* モーダルアクション: 小さく */
             .modal-actions { gap: 8px; padding: 10px 12px; }
             .modal-btn { padding: 8px 12px; font-size: 12px; }
-            #modal-tags { max-width: 95%; }
+            /* モーダルタグ: 横幅広げる */
+            #modal-tags { max-width: 95%; left: 50%; }
+            /* ショートカットヘルプ: 右下に収める */
+            #shortcut-help { right: 8px; bottom: 8px; }
         }
+
         @media (max-width: 480px) {
             .header-brand { display: none; }
             .header-icon-export, .header-icon-shortcut { display: none; }
@@ -169,16 +159,18 @@
             .filter-chip { padding: 10px 12px; }
             .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .card { height: 220px; }
-            .grid-controls { display: none; }
             #modal-content { max-width: 100%; max-height: calc(100vh - 140px); }
             #modal-body img, #modal-body video { max-height: calc(100vh - 140px); }
             .modal-nav.left { left: 4px; }
             .modal-nav.right { right: 4px; }
             #modal-close { top: 8px; right: 8px; }
-            .modal-actions { bottom: 12px; padding: 8px 10px; gap: 6px; }
+            .modal-actions { bottom: 12px; padding: 8px 10px; gap: 6px; border-radius: 16px; }
+            /* アイコンのみ表示 */
             .btn-label { display: none; }
             .modal-btn { padding: 8px; border-radius: 50%; width: 40px; height: 40px; justify-content: center; }
             #modal-tags { bottom: 80px; max-width: 98%; }
+            #activeTagsDisplay { padding: 8px 12px; }
+            .grid-controls { display: none; }
         }
     </style>
 </head>
@@ -198,10 +190,10 @@
         <button class="icon-btn" id="favBtn" onclick="toggleFavMode()" title="お気に入り (F)">
             <span class="material-icons">favorite_border</span>
         </button>
-        <button class="icon-btn header-icon-export" onclick="exportFavorites()" title="お気に入りをエクスポート">
+        <button class="icon-btn header-icon-export" onclick="exportFavorites()" title="お気に入りエクスポート">
             <span class="material-icons">file_download</span>
         </button>
-        <button class="icon-btn header-icon-shortcut" onclick="toggleShortcutHelp()" title="ショートカット (?)">
+        <button class="icon-btn header-icon-shortcut" onclick="toggleShortcutHelp()" title="キーボードショートカット (?)">
             <span class="material-icons">keyboard</span>
         </button>
     </div>
@@ -220,13 +212,6 @@
     <div class="filter-chip active" id="aiFilter" data-filter="ai">
         <span class="material-icons md-18">block</span><span>AI除外</span>
     </div>
-    <div class="filter-divider"></div>
-    <div class="filter-chip" data-quicktag="animated">
-        <span class="material-icons md-18">gif</span><span>GIF</span>
-    </div>
-    <div class="filter-chip" data-quicktag="video">
-        <span class="material-icons md-18">videocam</span><span>動画</span>
-    </div>
     <div class="grid-controls">
         <button class="grid-btn" onclick="setGridSize('large')" id="grid-large" title="大">
             <span class="material-icons md-18">grid_on</span>
@@ -241,7 +226,6 @@
 </div>
 
 <div id="activeTagsDisplay"></div>
-<div id="quickTags"></div>
 
 <div class="content-area">
     <div id="status"></div>
@@ -255,27 +239,26 @@
     </div>
 </div>
 
+<!-- Shortcut help -->
 <div id="shortcut-help">
-    <h4>キーボードショートカット</h4>
+    <h4>⌨️ キーボードショートカット</h4>
     <div class="shortcut-row"><span>次のページ</span><span><kbd>→</kbd> / <kbd>.</kbd></span></div>
     <div class="shortcut-row"><span>前のページ</span><span><kbd>←</kbd> / <kbd>,</kbd></span></div>
     <div class="shortcut-row"><span>モーダル: 次</span><span><kbd>→</kbd></span></div>
     <div class="shortcut-row"><span>モーダル: 前</span><span><kbd>←</kbd></span></div>
-    <div class="shortcut-row"><span>閉じる</span><span><kbd>Esc</kbd></span></div>
+    <div class="shortcut-row"><span>モーダル: 閉じる</span><span><kbd>Esc</kbd></span></div>
     <div class="shortcut-row"><span>お気に入り</span><span><kbd>F</kbd></span></div>
     <div class="shortcut-row"><span>ダウンロード</span><span><kbd>D</kbd></span></div>
     <div class="shortcut-row"><span>タグ表示</span><span><kbd>T</kbd></span></div>
-    <div class="shortcut-row"><span>検索フォーカス</span><span><kbd>/</kbd></span></div>
+    <div class="shortcut-row"><span>検索</span><span><kbd>/</kbd></span></div>
     <div class="shortcut-row"><span>このヘルプ</span><span><kbd>?</kbd></span></div>
 </div>
 
+<!-- Toast -->
 <div id="toast"></div>
 
-<!-- Modal: 背景・コンテンツ・UI を完全分離 -->
+<!-- Modal -->
 <div id="modal">
-    <!-- 背景クリックで閉じる -->
-    <div id="modal-backdrop" onclick="closeModal()"></div>
-    <!-- 閉じる・ナビ（最前面） -->
     <button class="icon-btn" id="modal-close" onclick="closeModal()">
         <span class="material-icons">close</span>
     </button>
@@ -285,14 +268,10 @@
     <button class="icon-btn modal-nav right" onclick="navigateModal(1)">
         <span class="material-icons">chevron_right</span>
     </button>
-    <!-- 画像・動画（クリックしても閉じない） -->
-    <div id="modal-center">
-        <div id="modal-content">
-            <div id="modal-body"></div>
-        </div>
+    <div id="modal-content" onclick="closeModal()">
+        <div id="modal-body" onclick="event.stopPropagation()"></div>
     </div>
-    <!-- アクションバー（クリックしても閉じない） -->
-    <div class="modal-actions">
+    <div class="modal-actions" onclick="event.stopPropagation()">
         <button class="modal-btn" onclick="downloadMedia()">
             <span class="material-icons md-18">download</span><span class="btn-label">DL</span>
         </button>
@@ -303,83 +282,85 @@
             <span class="material-icons md-18">label</span><span class="btn-label">タグ</span>
         </button>
     </div>
-    <!-- タグパネル（クリックしても閉じない・スクロール可） -->
-    <div id="modal-tags"></div>
+    <div id="modal-tags" onclick="event.stopPropagation()"></div>
 </div>
 
 <script>
-    const USER_ID  = '5908339';
-    const API_KEY  = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
+    const USER_ID = '5908339';
+    const API_KEY = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
 
-    // よく使うタグ（ピン留め表示用）
-    const PINNED_TAGS = ['naruto', 'one_piece', 'hentai', '1girl', '2girls', 'solo', 'big_breasts'];
+    function isTouchDevice() {
+        return window.matchMedia('(hover: none)').matches;
+    }
 
-    let activeTags   = [];
-    let currentPage  = 0;
-    let currentSort  = '';
+    let activeTags = [];
+    let currentPage = 0;
+    let currentSort = '';
     let aiFilterEnabled = true;
-    let isFavMode    = false;
-    let favorites    = JSON.parse(localStorage.getItem('rule34_favs') || '[]');
+    let isFavMode = false;
+    let favorites = JSON.parse(localStorage.getItem('rule34_favs') || '[]');
     let currentGalleryData = [];
-    let currentModalIndex  = -1;
-    let hasMoreResults     = true;
-    let totalCount         = null;
+    let currentModalIndex = -1;
+    let hasMoreResults = true;
     let timeoutId;
+    let totalCount = null;
     let shortcutHelpVisible = false;
 
-    const searchInput  = document.getElementById('searchInput');
-    const clearBtn     = document.getElementById('clearBtn');
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
     const autocomplete = document.getElementById('autocomplete');
     const activeTagsDisplay = document.getElementById('activeTagsDisplay');
-    const gallery      = document.getElementById('gallery');
-    const status       = document.getElementById('status');
-    const pageInput    = document.getElementById('pageInput');
-    const modal        = document.getElementById('modal');
-    const modalBody    = document.getElementById('modal-body');
-    const modalTags    = document.getElementById('modal-tags');
+    const gallery = document.getElementById('gallery');
+    const status = document.getElementById('status');
+    const pageInput = document.getElementById('pageInput');
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+    const modalTags = document.getElementById('modal-tags');
+    const previewTooltip = document.getElementById('preview-tooltip');
+    const previewImg = document.getElementById('preview-img');
 
-    // タッチデバイス判定
-    const isTouch = () => window.matchMedia('(hover: none)').matches;
-
-    // ===== URL State =====
+    // --- URL State Management ---
     function pushState() {
-        const p = new URLSearchParams();
-        if (activeTags.length) p.set('tags', activeTags.join(' '));
-        if (currentPage > 0)   p.set('page', currentPage);
-        if (currentSort)       p.set('sort', currentSort);
-        if (!aiFilterEnabled)  p.set('ai', '0');
-        history.pushState({ activeTags, currentPage, currentSort, aiFilterEnabled }, '',
-            p.toString() ? `?${p}` : location.pathname);
+        const params = new URLSearchParams();
+        if (activeTags.length) params.set('tags', activeTags.join(' '));
+        if (currentPage > 0) params.set('page', currentPage);
+        if (currentSort) params.set('sort', currentSort);
+        if (!aiFilterEnabled) params.set('ai', '0');
+        const url = params.toString() ? `?${params}` : location.pathname;
+        history.pushState({ activeTags, currentPage, currentSort, aiFilterEnabled }, '', url);
     }
 
     function loadStateFromURL() {
-        const p = new URLSearchParams(location.search);
-        activeTags   = p.get('tags') ? p.get('tags').split(' ').filter(Boolean) : [];
-        currentPage  = parseInt(p.get('page') || '0');
-        currentSort  = p.get('sort') || '';
-        aiFilterEnabled = p.get('ai') !== '0';
+        const params = new URLSearchParams(location.search);
+        activeTags = params.get('tags') ? params.get('tags').split(' ').filter(Boolean) : [];
+        currentPage = parseInt(params.get('page') || '0');
+        currentSort = params.get('sort') || '';
+        aiFilterEnabled = params.get('ai') !== '0';
+
         renderTags();
         document.getElementById('aiFilter').classList.toggle('active', aiFilterEnabled);
+
         if (currentSort) {
             document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
                 if (c.getAttribute('data-filter') !== 'ai') c.classList.remove('active');
             });
-            const sc = document.querySelector(`.filter-chip[data-filter="${currentSort}"]`);
-            if (sc) sc.classList.add('active');
+            const sortChip = document.querySelector(`.filter-chip[data-filter="${currentSort}"]`);
+            if (sortChip) sortChip.classList.add('active');
         }
     }
 
     window.addEventListener('popstate', (e) => {
-        if (!e.state) return;
-        activeTags  = e.state.activeTags  || [];
-        currentPage = e.state.currentPage || 0;
-        currentSort = e.state.currentSort || '';
-        aiFilterEnabled = e.state.aiFilterEnabled !== false;
-        renderTags();
-        performSearch(currentPage, false);
+        if (e.state) {
+            activeTags = e.state.activeTags || [];
+            currentPage = e.state.currentPage || 0;
+            currentSort = e.state.currentSort || '';
+            aiFilterEnabled = e.state.aiFilterEnabled !== false;
+            renderTags();
+            performSearch(currentPage, false);
+        }
     });
 
-    // ===== Grid Size =====
+    // --- Grid Size ---
     const GRID_SIZES = { large: '320px', medium: '240px', small: '160px' };
     function setGridSize(size) {
         document.documentElement.style.setProperty('--grid-min', GRID_SIZES[size]);
@@ -388,79 +369,45 @@
         localStorage.setItem('rule34_gridSize', size);
     }
 
-    // ===== Toast =====
+    // --- Toast ---
     function showToast(msg, duration = 2000) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), duration);
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), duration);
     }
 
-    // ===== Quick Tags (よく見るタグ) =====
-    function renderQuickTags() {
-        const container = document.getElementById('quickTags');
-        let tagStats = JSON.parse(localStorage.getItem('rule34_tagStats') || '{}');
-
-        // タグの表示回数でソート（多い順）
-        const sorted = Object.entries(tagStats)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 12)
-            .map(([tag]) => tag);
-
-        if (sorted.length === 0) { container.innerHTML = ''; return; }
-
-        container.innerHTML = `<span class="quick-tag-label">よく見るタグ:</span>`;
-        sorted.forEach(tag => {
-            const count = tagStats[tag] || 0;
-            const btn = document.createElement('button');
-            btn.className = 'quick-tag';
-            btn.textContent = tag;
-            btn.title = `${count}回表示 - クリックで検索`;
-            btn.style.opacity = Math.max(0.6, Math.min(1, 0.6 + count * 0.05));
-            btn.onclick = () => {
-                if (activeTags.includes(tag)) removeTag(tag);
-                else addTag(tag);
-            };
-            container.appendChild(btn);
-        });
-    }
-
-    function recordTagView(tags) {
-        let stats = JSON.parse(localStorage.getItem('rule34_tagStats') || '{}');
-        tags.forEach(tag => {
-            stats[tag] = (stats[tag] || 0) + 1;
-        });
-        localStorage.setItem('rule34_tagStats', JSON.stringify(stats));
-    }
-
-    // ===== Init =====
+    // --- Init ---
     window.addEventListener('DOMContentLoaded', () => {
-        setGridSize(localStorage.getItem('rule34_gridSize') || 'medium');
+        // Restore grid size
+        const savedGrid = localStorage.getItem('rule34_gridSize') || 'medium';
+        setGridSize(savedGrid);
+
         loadStateFromURL();
-        renderQuickTags();
         performSearch(currentPage, false);
 
-        // 検索入力
+        // Search input
         searchInput.addEventListener('input', () => {
             clearBtn.style.display = searchInput.value.length > 0 ? 'inline-flex' : 'none';
             clearTimeout(timeoutId);
-            const q = searchInput.value.trim();
-            if (q.length < 2) { autocomplete.classList.remove('show'); return; }
+            const query = searchInput.value.trim();
+            if (query.length < 2) { autocomplete.classList.remove('show'); return; }
             timeoutId = setTimeout(async () => {
+                const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + query)}`;
                 try {
-                    const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + q)}`;
-                    const res  = await fetch(url);
+                    const res = await fetch(url);
                     const data = await res.json();
-                    if (!data || !data.length) { autocomplete.classList.remove('show'); return; }
-                    autocomplete.innerHTML = '';
-                    data.slice(0, 8).forEach(item => {
-                        const d = document.createElement('div');
-                        d.className = 'autocomplete-item';
-                        d.innerHTML = `<span class="material-icons md-20" style="color:var(--text-secondary)">search</span><span class="autocomplete-text">${item.value}</span><span class="autocomplete-count">${item.label}</span>`;
-                        d.onclick = () => { addTag(item.value); searchInput.value = ''; clearBtn.style.display = 'none'; autocomplete.classList.remove('show'); };
-                        autocomplete.appendChild(d);
-                    });
-                    autocomplete.classList.add('show');
+                    if (data && data.length > 0) {
+                        autocomplete.innerHTML = '';
+                        data.slice(0, 8).forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.innerHTML = `<span class="material-icons md-20">search</span><span class="autocomplete-text">${item.value}</span><span class="autocomplete-count">${item.label}</span>`;
+                            div.onclick = () => { addTag(item.value); searchInput.value = ''; clearBtn.style.display = 'none'; autocomplete.classList.remove('show'); };
+                            autocomplete.appendChild(div);
+                        });
+                        autocomplete.classList.add('show');
+                    }
                 } catch(e) {}
             }, 150);
         });
@@ -483,23 +430,26 @@
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.header-search')) autocomplete.classList.remove('show');
+            if (!e.target.closest('#shortcut-help') && !e.target.closest('.icon-btn[onclick*="toggleShortcutHelp"]')) {
+                // Keep help open until explicitly closed
+            }
         });
 
-        // フィルターチップ
+        // Filter chips
         document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
             chip.addEventListener('click', () => {
-                const f = chip.getAttribute('data-filter');
-                if (f === 'ai') {
+                const filter = chip.getAttribute('data-filter');
+                if (filter === 'ai') {
                     aiFilterEnabled = !aiFilterEnabled;
                     chip.classList.toggle('active');
-                } else if (f === 'all') {
+                } else if (filter === 'all') {
                     currentSort = '';
                     document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
                         if (c.getAttribute('data-filter') !== 'ai') c.classList.remove('active');
                     });
                     chip.classList.add('active');
                 } else {
-                    currentSort = f;
+                    currentSort = filter;
                     document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
                         if (c.getAttribute('data-filter') !== 'ai') c.classList.remove('active');
                     });
@@ -509,53 +459,31 @@
             });
         });
 
-        // GIF・動画クイックアクセスチップ
-        document.querySelectorAll('.filter-chip[data-quicktag]').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const tag = chip.getAttribute('data-quicktag');
-                if (activeTags.includes(tag)) {
-                    removeTag(tag);
-                    chip.classList.remove('active');
-                } else {
-                    addTag(tag);
-                    chip.classList.add('active');
-                }
-            });
-        });
-
-        // キーボードショートカット
+        // Keyboard shortcuts
         document.addEventListener('keydown', handleKeyboard);
-
-        // タッチスワイプ（モーダル）
-        let tx = 0, ty = 0;
-        modal.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
-        modal.addEventListener('touchend', e => {
-            const dx = e.changedTouches[0].clientX - tx;
-            const dy = e.changedTouches[0].clientY - ty;
-            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) navigateModal(dx < 0 ? 1 : -1);
-        }, { passive: true });
     });
 
-    // ===== Keyboard =====
+    // --- Keyboard Shortcuts ---
     function handleKeyboard(e) {
-        const inInput   = ['INPUT','TEXTAREA'].includes(e.target.tagName);
+        const tag = e.target.tagName;
+        const inInput = tag === 'INPUT' || tag === 'TEXTAREA';
         const modalOpen = modal.classList.contains('show');
 
         if (e.key === '?' && !inInput) { toggleShortcutHelp(); return; }
         if (e.key === '/' && !inInput) { e.preventDefault(); searchInput.focus(); return; }
 
         if (modalOpen) {
-            if (e.key === 'Escape')      { closeModal(); return; }
-            if (e.key === 'ArrowRight')  { navigateModal(1); return; }
-            if (e.key === 'ArrowLeft')   { navigateModal(-1); return; }
-            if (/^[dD]$/.test(e.key))    { downloadMedia(); return; }
-            if (/^[tT]$/.test(e.key))    { toggleModalTags(); return; }
-            if (/^[fF]$/.test(e.key))    { toggleModalFav(); return; }
+            if (e.key === 'Escape') { closeModal(); return; }
+            if (e.key === 'ArrowRight') { navigateModal(1); return; }
+            if (e.key === 'ArrowLeft') { navigateModal(-1); return; }
+            if (e.key === 'd' || e.key === 'D') { downloadMedia(); return; }
+            if (e.key === 't' || e.key === 'T') { toggleModalTags(); return; }
+            if (e.key === 'f' || e.key === 'F') { toggleModalFav(); return; }
         } else {
             if (inInput) return;
             if (e.key === 'ArrowRight' || e.key === '.') { changePage(1); return; }
-            if (e.key === 'ArrowLeft'  || e.key === ',') { changePage(-1); return; }
-            if (/^[fF]$/.test(e.key)) { toggleFavMode(); return; }
+            if (e.key === 'ArrowLeft' || e.key === ',') { changePage(-1); return; }
+            if (e.key === 'f' || e.key === 'F') { toggleFavMode(); return; }
         }
     }
 
@@ -564,89 +492,73 @@
         document.getElementById('shortcut-help').classList.toggle('show', shortcutHelpVisible);
     }
 
-    // ===== Tags =====
+    // --- Tags ---
     function addTag(tag) {
         tag = tag.trim().toLowerCase();
         if (!tag || activeTags.includes(tag)) return;
         activeTags.push(tag);
-        saveTagHistory(tag);
         renderTags();
-        renderQuickTags();
-        // GIF/動画チップの状態更新
-        document.querySelectorAll('.filter-chip[data-quicktag]').forEach(c => {
-            c.classList.toggle('active', activeTags.includes(c.getAttribute('data-quicktag')));
-        });
         performSearch(0);
     }
 
     function removeTag(tag) {
         activeTags = activeTags.filter(t => t !== tag);
         renderTags();
-        renderQuickTags();
-        document.querySelectorAll('.filter-chip[data-quicktag]').forEach(c => {
-            c.classList.toggle('active', activeTags.includes(c.getAttribute('data-quicktag')));
-        });
         performSearch(0);
     }
 
     function renderTags() {
         activeTagsDisplay.innerHTML = '';
         activeTags.forEach(tag => {
-            const b = document.createElement('div');
-            b.className = 'tag-badge';
-            b.innerHTML = `<span>${tag}</span><span class="material-icons md-18" onclick="removeTag('${tag.replace(/'/g,"\\'")}')">close</span>`;
-            activeTagsDisplay.appendChild(b);
+            const badge = document.createElement('div');
+            badge.className = 'tag-badge';
+            badge.innerHTML = `<span>${tag}</span><span class="material-icons md-18" onclick="removeTag('${tag.replace(/'/g, "\\'")}')">close</span>`;
+            activeTagsDisplay.appendChild(badge);
         });
     }
 
-    // ===== Search & Total Count =====
+    // --- Search & Total Count ---
     async function fetchTotalCount(queryStr) {
         try {
             const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=0&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
-            const res  = await fetch(url);
+            const res = await fetch(url);
             const text = await res.text();
-            const m    = text.match(/count="(\d+)"/);
-            if (m) return parseInt(m[1]);
+            const match = text.match(/count="(\d+)"/);
+            if (match) return parseInt(match[1]);
         } catch(e) {}
         return null;
     }
 
-    async function performSearch(page, doUpdateURL = true) {
+    async function performSearch(page, updateURL = true) {
         if (isFavMode) {
             isFavMode = false;
             document.getElementById('favBtn').classList.remove('active');
-            document.getElementById('favBtn').querySelector('.material-icons').textContent = 'favorite_border';
             document.getElementById('pagination').style.display = 'flex';
         }
 
         currentPage = parseInt(page);
         pageInput.value = currentPage + 1;
-        totalCount = null;
         gallery.innerHTML = '';
-        status.innerHTML  = '<span class="spinner"></span> 読み込み中...';
+        status.innerHTML = '<span class="spinner"></span> 読み込み中...';
         document.getElementById('pageInfo').textContent = '';
 
-        let q = [...activeTags];
-        if (aiFilterEnabled) q.push('-ai_generated');
-        if (currentSort)     q.push(currentSort);
-        const queryStr = q.join('+');
+        let queryArray = [...activeTags];
+        if (aiFilterEnabled) queryArray.push('-ai_generated');
+        if (currentSort) queryArray.push(currentSort);
+        const queryStr = queryArray.join('+');
 
-        if (doUpdateURL) pushState();
+        if (updateURL) pushState();
 
-        // 総ページ数を非同期で取得
+        // Fetch total count in parallel
         fetchTotalCount(queryStr).then(count => {
-            if (count === null) return;
             totalCount = count;
-            const tp = Math.ceil(count / 40);
-            document.getElementById('pageInfo').textContent = `/ ${tp.toLocaleString()}ページ (${count.toLocaleString()}件)`;
-            renderPageButtons(tp);
-            document.getElementById('nextBtn').disabled = currentPage >= tp - 1;
+            updatePageInfo();
         });
 
         const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
 
         try {
-            const res  = await fetch(url);
+            const res = await fetch(url);
             const data = await res.json();
             currentGalleryData = data || [];
             hasMoreResults = currentGalleryData.length >= 40;
@@ -659,22 +571,30 @@
         }
     }
 
+    function updatePageInfo() {
+        if (totalCount === null) return;
+        const totalPages = Math.ceil(totalCount / 40);
+        document.getElementById('pageInfo').textContent = `/ ${totalPages.toLocaleString()}ページ (${totalCount.toLocaleString()}件)`;
+        // ページボタンを総ページ数確定後に再描画（updatePaginationは呼ばない）
+        renderPageButtons(totalPages);
+    }
+
     function renderPageButtons(totalPages) {
-        const pb = document.getElementById('pageButtons');
-        pb.innerHTML = '';
-        const last  = totalPages != null ? totalPages - 1 : (hasMoreResults ? currentPage + 10 : currentPage);
+        const pageButtons = document.getElementById('pageButtons');
+        pageButtons.innerHTML = '';
+        const lastPage = totalPages !== null ? totalPages - 1 : (hasMoreResults ? currentPage + 10 : currentPage);
         const start = Math.max(0, currentPage - 2);
-        const end   = Math.min(last, start + 4);
+        const end = Math.min(lastPage, start + 4);
         for (let i = start; i <= end; i++) {
-            const b = document.createElement('button');
-            b.className = 'page-btn' + (i === currentPage ? ' active' : '');
-            b.textContent = i + 1;
-            b.onclick = () => performSearch(i);
-            pb.appendChild(b);
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i + 1;
+            btn.onclick = () => performSearch(i);
+            pageButtons.appendChild(btn);
         }
     }
 
-    // ===== Gallery =====
+    // --- Gallery ---
     function renderGallery() {
         gallery.innerHTML = '';
         if (!currentGalleryData || currentGalleryData.length === 0) {
@@ -683,82 +603,87 @@
         }
 
         currentGalleryData.forEach((post, index) => {
-            const isVideo  = post.file_url && /\.(mp4|webm)$/i.test(post.file_url);
-            const isFaved  = favorites.some(f => f.id === post.id);
+            const isVideo = post.file_url && /\.(mp4|webm)$/i.test(post.file_url);
+            const isFaved = favorites.some(f => f.id === post.id);
             const thumbUrl = post.sample_url || post.preview_url || post.file_url;
 
             const card = document.createElement('div');
             card.className = 'card';
 
-            const box = document.createElement('div');
-            box.className = 'media-box';
-            box.onclick = () => openModal(index);
+            const mediaBox = document.createElement('div');
+            mediaBox.className = 'media-box';
+            mediaBox.onclick = () => openModal(index);
 
             const img = document.createElement('img');
             img.className = 'thumb-img';
-            img.src     = thumbUrl;
+            img.src = thumbUrl;
             img.loading = 'lazy';
-            box.appendChild(img);
+            img.alt = '';
+            mediaBox.appendChild(img);
 
             if (isVideo) {
                 const badge = document.createElement('div');
                 badge.className = 'video-indicator';
                 badge.textContent = 'VIDEO';
-                box.appendChild(badge);
+                mediaBox.appendChild(badge);
 
-                if (!isTouch()) {
-                    const vid = document.createElement('video');
-                    vid.className   = 'hover-video';
-                    vid.src         = post.file_url;
-                    vid.muted       = true;
-                    vid.loop        = true;
-                    vid.preload     = 'none';
-                    vid.playsInline = true;
-                    box.appendChild(vid);
-                    card.addEventListener('mouseenter', () => vid.play().catch(() => {}));
-                    card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
-                }
+                const vid = document.createElement('video');
+                vid.className = 'hover-video';
+                vid.src = post.file_url;
+                vid.muted = true;
+                vid.loop = true;
+                vid.preload = 'none';
+                vid.playsInline = true;
+                vid.setAttribute('playsinline', '');
+                vid.setAttribute('webkit-playsinline', '');
+                mediaBox.appendChild(vid);
+
+                card.addEventListener('mouseenter', () => { if (!isTouchDevice()) vid.play().catch(() => {}); });
+                card.addEventListener('mouseleave', () => { if (!isTouchDevice()) { vid.pause(); vid.currentTime = 0; } });
             }
 
             const favBtn = document.createElement('button');
             favBtn.className = 'fav-btn' + (isFaved ? ' active' : '');
+            favBtn.title = 'お気に入り';
             favBtn.innerHTML = '<span class="material-icons md-18">favorite</span>';
-            favBtn.onclick   = (e) => { e.stopPropagation(); toggleFav(post, favBtn); };
+            favBtn.onclick = (e) => { e.stopPropagation(); toggleFav(post, favBtn); };
 
-            card.appendChild(box);
+            card.appendChild(mediaBox);
             card.appendChild(favBtn);
             gallery.appendChild(card);
         });
     }
 
-    // ===== Pagination =====
+    // --- Pagination ---
     function updatePagination() {
         document.getElementById('prevBtn').disabled = currentPage === 0;
         document.getElementById('nextBtn').disabled = !hasMoreResults;
-        const tp = totalCount !== null ? Math.ceil(totalCount / 40) : null;
-        renderPageButtons(tp);
+        const totalPages = totalCount !== null ? Math.ceil(totalCount / 40) : null;
+        renderPageButtons(totalPages);
     }
 
     function changePage(delta) {
-        const np = currentPage + delta;
-        if (np < 0) return;
+        const newPage = currentPage + delta;
+        if (newPage < 0) return;
         if (delta > 0 && !hasMoreResults) return;
-        performSearch(np);
+        performSearch(newPage);
     }
 
-    function goToPage(page) { performSearch(parseInt(page) - 1); }
+    function goToPage(page) {
+        performSearch(parseInt(page) - 1);
+    }
 
-    // ===== Favorites =====
+    // --- Favorites ---
     function toggleFav(post, btn) {
-        const idx = favorites.findIndex(f => f.id === post.id);
-        if (idx > -1) {
-            favorites.splice(idx, 1);
+        const index = favorites.findIndex(f => f.id === post.id);
+        if (index > -1) {
+            favorites.splice(index, 1);
             btn.classList.remove('active');
             showToast('お気に入りから削除しました');
         } else {
             favorites.push(post);
             btn.classList.add('active');
-            showToast('お気に入りに追加しました');
+            showToast('お気に入りに追加しました ❤️');
         }
         localStorage.setItem('rule34_favs', JSON.stringify(favorites));
         if (isFavMode) { currentGalleryData = favorites; renderGallery(); }
@@ -784,7 +709,22 @@
 
     function exportFavorites() {
         if (favorites.length === 0) { showToast('エクスポートするお気に入りがありません'); return; }
-        const blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), count: favorites.length, favorites }, null, 2)], { type: 'application/json' });
+
+        const data = {
+            exported: new Date().toISOString(),
+            count: favorites.length,
+            favorites: favorites.map(p => ({
+                id: p.id,
+                file_url: p.file_url,
+                preview_url: p.preview_url,
+                tags: p.tags,
+                score: p.score,
+                width: p.width,
+                height: p.height
+            }))
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `rule34_favorites_${Date.now()}.json`;
@@ -793,28 +733,26 @@
         showToast(`${favorites.length}件をエクスポートしました`);
     }
 
-    // ===== Modal =====
+    // --- Modal ---
     function openModal(index) {
         if (!currentGalleryData[index]) return;
         currentModalIndex = index;
-        const post    = currentGalleryData[index];
+        const post = currentGalleryData[index];
         const isVideo = post.file_url && /\.(mp4|webm)$/i.test(post.file_url);
-
-        modalTags.classList.remove('show');
-        modalBody.innerHTML = '';
-
         if (isVideo) {
             const vid = document.createElement('video');
             vid.src = post.file_url;
             vid.controls = true;
             vid.loop = true;
             vid.playsInline = true;
+            vid.setAttribute('playsinline', '');
+            vid.setAttribute('webkit-playsinline', '');
+            modalBody.innerHTML = '';
             modalBody.appendChild(vid);
-            vid.play().catch(() => {});
+            vid.play().catch(() => {}); // ユーザー操作起点なので基本再生できる
         } else {
             modalBody.innerHTML = `<img src="${post.file_url}" alt="">`;
         }
-
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
         updateModalFavBtn();
@@ -834,21 +772,35 @@
         openModal(currentModalIndex);
     }
 
+    // タッチスワイプ（左右で画像ナビゲーションのみ）
+    let touchStartX = 0, touchStartY = 0;
+    modal.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    modal.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+            navigateModal(dx < 0 ? 1 : -1);
+        }
+    }, { passive: true });
+
     function downloadMedia() {
         if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
         const post = currentGalleryData[currentModalIndex];
-        const a    = document.createElement('a');
-        a.href     = post.file_url;
+        const a = document.createElement('a');
+        a.href = post.file_url;
         a.download = post.file_url.split('/').pop();
-        a.target   = '_blank';
+        a.target = '_blank';
         a.click();
     }
 
     function updateModalFavBtn() {
         if (currentModalIndex < 0) return;
-        const post   = currentGalleryData[currentModalIndex];
+        const post = currentGalleryData[currentModalIndex];
         const isFaved = favorites.some(f => f.id === post.id);
-        const btn    = document.getElementById('modal-fav-btn');
+        const btn = document.getElementById('modal-fav-btn');
         btn.querySelector('.material-icons').textContent = isFaved ? 'favorite' : 'favorite_border';
         btn.style.color = isFaved ? 'var(--fav)' : '';
     }
@@ -856,8 +808,8 @@
     function toggleModalFav() {
         if (currentModalIndex < 0 || !currentGalleryData[currentModalIndex]) return;
         const post = currentGalleryData[currentModalIndex];
-        const dummy = document.createElement('button');
-        toggleFav(post, dummy);
+        const cardFavBtn = gallery.querySelectorAll('.fav-btn')[currentModalIndex];
+        toggleFav(post, cardFavBtn || document.createElement('button'));
         updateModalFavBtn();
     }
 
@@ -868,11 +820,11 @@
         const tags = post.tags ? post.tags.split(' ') : [];
         modalTags.innerHTML = '';
         tags.forEach(tag => {
-            const s = document.createElement('span');
-            s.className = 'modal-tag';
-            s.textContent = tag;
-            s.onclick = () => { addTag(tag); closeModal(); };
-            modalTags.appendChild(s);
+            const span = document.createElement('span');
+            span.className = 'modal-tag';
+            span.textContent = tag;
+            span.onclick = () => { addTag(tag); closeModal(); };
+            modalTags.appendChild(span);
         });
         modalTags.classList.add('show');
     }
