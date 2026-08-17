@@ -865,6 +865,23 @@
         modalBody.innerHTML = '';
     }
 
+    // モーダル背景クリック時：コンテンツ外なら閉じる
+    document.getElementById('modal-backdrop').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modal-backdrop')) {
+            closeModal();
+        }
+    });
+
+    // モーダルコンテンツクリック時：コンテンツの外なら閉じる
+    document.getElementById('modal-center').addEventListener('click', (e) => {
+        // クリック位置がコンテンツ内か判定
+        const rect = document.getElementById('modal-content').getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right ||
+            e.clientY < rect.top || e.clientY > rect.bottom) {
+            closeModal();
+        }
+    });
+
     function navigateModal(delta) {
         if (!currentGalleryData.length) return;
         currentModalIndex = (currentModalIndex + delta + currentGalleryData.length) % currentGalleryData.length;
