@@ -329,6 +329,30 @@
     const USER_ID  = '5908339';
     const API_KEY  = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
 
+    // CORSプロキシリスト（複数用意してフォールバック）
+    const CORS_PROXIES = [
+        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        url => `https://cors-anywhere.herokuapp.com/${url}`,
+    ];
+
+    let currentProxyIndex = 0;
+
+    // CORSプロキシでURLを取得（失敗時は次のプロキシを試す）
+    async function fetchWithProxy(url) {
+        for (let i = 0; i < CORS_PROXIES.length; i++) {
+            try {
+                const proxyUrl = CORS_PROXIES[(currentProxyIndex + i) % CORS_PROXIES.length](url);
+                const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
+                if (res.ok) {
+                    currentProxyIndex = (currentProxyIndex + i) % CORS_PROXIES.length;
+                    return res;
+                }
+            } catch (e) {}
+        }
+        throw new Error('すべてのプロキシが失敗しました');
+    }
+
     // よく使うタグ（ピン留め表示用）
     const PINNED_TAGS = ['naruto', 'one_piece', 'hentai', '1girl', '2girls', 'solo', 'big_breasts'];
 
@@ -466,8 +490,8 @@
             if (q.length < 2) { autocomplete.classList.remove('show'); return; }
             timeoutId = setTimeout(async () => {
                 try {
-                    const url = `https://corsproxy.io/?${encodeURIComponent('https://api.rule34.xxx/autocomplete.php?q=' + q)}`;
-                    const res  = await fetch(url);
+                    const url = `https://api.rule34.xxx/autocomplete.php?q=${q}`;
+                    const res  = await fetchWithProxy(url);
                     const data = await res.json();
                     if (!data || !data.length) { autocomplete.classList.remove('show'); return; }
                     autocomplete.innerHTML = '';
@@ -621,12 +645,14 @@
     // ===== Search & Total Count =====
     async function fetchTotalCount(queryStr) {
         try {
-            const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=0&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
-            const res  = await fetch(url);
+            const url = `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=0&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`;
+            const res  = await fetchWithProxy(url);
             const text = await res.text();
             const m    = text.match(/count="(\d+)"/);
             if (m) return parseInt(m[1]);
-        } catch(e) {}
+        } catch(e) {
+            console.error('Total count fetch error:', e);
+        }
         return null;
     }
 
@@ -665,10 +691,10 @@
             document.getElementById('nextBtn').disabled = currentPage >= tp - 1;
         });
 
-        const url = `https://corsproxy.io/?${encodeURIComponent(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`)}`;
+        const url = `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=40&pid=${currentPage}&tags=${queryStr}&user_id=${USER_ID}&api_key=${API_KEY}`;
 
         try {
-            const res  = await fetch(url);
+            const res  = await fetchWithProxy(url);
             const data = await res.json();
             currentGalleryData = data || [];
             hasMoreResults = currentGalleryData.length >= 40;
@@ -677,7 +703,7 @@
             status.innerHTML = '';
             window.scrollTo(0, 0);
         } catch(e) {
-            status.innerHTML = '⚠️ エラーが発生しました';
+            status.innerHTML = '⚠️ エラーが発生しました（プロキシが利用できません）';
         }
     }
 
