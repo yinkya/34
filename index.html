@@ -327,12 +327,11 @@
 
 <script>
     const USER_ID  = '5908339';
-    const API_KEY  = '25c390df3ca5395e47a0e0a5d8ee791b52c5c93333d973099f2c480aa7ca05580e7de7221726eda15716afd801b8f81ca17f8654024082fee9dd5ff4a14184f9';
+    const API_KEY  = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
 
-    // CORSプロキシリスト（最も安定したものを優先）
+    // CORSプロキシリスト（CloudflareWorker）
     const CORS_PROXIES = [
-        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        url => `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`,
+        url => `https://rule34.arinkodayo0204.workers.dev?url=${encodeURIComponent(url)}`,
     ];
 
     let currentProxyIndex = 0;
