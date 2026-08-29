@@ -327,7 +327,7 @@
 
 <script>
     const USER_ID  = '5908339';
-    const API_KEY  = 'abd1de488a4bb661b9a0329dd8a7fc700b5b49d749a9e9d665f412992488e6aa002e3ff8bacb7c6e35eb9dd47597309416f37484ff5acfa7ccd8445bfa56d463';
+    const API_KEY  = '25c390df3ca5395e47a0e0a5d8ee791b52c5c93333d973099f2c480aa7ca05580e7de7221726eda15716afd801b8f81ca17f8654024082fee9dd5ff4a14184f9';
 
     // CORSプロキシリスト（複数用意してフォールバック）
     const CORS_PROXIES = [
@@ -703,7 +703,19 @@
             status.innerHTML = '';
             window.scrollTo(0, 0);
         } catch(e) {
-            status.innerHTML = '⚠️ エラーが発生しました（プロキシが利用できません）';
+            status.innerHTML = `
+                <div style="padding:20px; background:var(--card); border-radius:8px; text-align:center;">
+                    <h3 style="color:var(--fav); margin-bottom:10px;">⚠️ APIに接続できません</h3>
+                    <p style="color:var(--text-secondary); margin-bottom:15px;">Rule34 APIへのアクセスが失敗しています。</p>
+                    <button onclick="location.reload()" style="padding:10px 20px; background:var(--accent); color:var(--bg); border:none; border-radius:6px; cursor:pointer; font-weight:600;">
+                        🔄 ページをリロード
+                    </button>
+                    <p style="color:var(--text-secondary); font-size:12px; margin-top:15px;">
+                        問題が解決しない場合は、<br>
+                        別のプロキシサービスの利用やAPIキーの確認が必要です。
+                    </p>
+                </div>
+            `;
         }
     }
 
