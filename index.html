@@ -329,11 +329,10 @@
     const USER_ID  = '5908339';
     const API_KEY  = '25c390df3ca5395e47a0e0a5d8ee791b52c5c93333d973099f2c480aa7ca05580e7de7221726eda15716afd801b8f81ca17f8654024082fee9dd5ff4a14184f9';
 
-    // CORSプロキシリスト（複数用意してフォールバック）
+    // CORSプロキシリスト（最も安定したものを優先）
     const CORS_PROXIES = [
         url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://cors-anywhere.herokuapp.com/${url}`,
+        url => `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`,
     ];
 
     let currentProxyIndex = 0;
@@ -342,13 +341,21 @@
     async function fetchWithProxy(url) {
         for (let i = 0; i < CORS_PROXIES.length; i++) {
             try {
-                const proxyUrl = CORS_PROXIES[(currentProxyIndex + i) % CORS_PROXIES.length](url);
-                const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
-                if (res.ok) {
-                    currentProxyIndex = (currentProxyIndex + i) % CORS_PROXIES.length;
+                const proxyIdx = (currentProxyIndex + i) % CORS_PROXIES.length;
+                const proxyUrl = CORS_PROXIES[proxyIdx](url);
+                
+                const res = await fetch(proxyUrl, { 
+                    timeout: 15000,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                if (res.ok || res.status === 200) {
+                    currentProxyIndex = proxyIdx;
                     return res;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.log(`プロキシ ${i} 失敗:`, e.message);
+            }
         }
         throw new Error('すべてのプロキシが失敗しました');
     }
